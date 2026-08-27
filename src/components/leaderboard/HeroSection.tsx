@@ -193,8 +193,13 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ categories, topProduct
   };
 
   const handlePriceChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const val = parseInt(e.target.value, 10);
-    setUserBidDollars(isNaN(val) ? 2 : Math.max(2, val));
+    const cleaned = e.target.value.replace(/\D/g, '');
+    if (!cleaned) {
+      setUserBidDollars(2);
+      return;
+    }
+    const val = parseInt(cleaned, 10);
+    setUserBidDollars(val);
   };
 
   // Active state: Can submit if URL is entered and category is chosen (or existing product detected)
@@ -272,13 +277,13 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ categories, topProduct
                 €
               </span>
               <input
-                type="number"
-                min="2"
-                step="1"
+                type="text"
+                inputMode="numeric"
+                pattern="[0-9]*"
                 value={userBidDollars}
                 onChange={handlePriceChange}
-                style={{ width: `${Math.max(1, String(userBidDollars).length) * 1.5 + 0.2}ch` }}
-                className="text-transparent bg-clip-text bg-gradient-to-r from-purple-600 via-indigo-600 to-blue-600 dark:from-purple-400 dark:via-indigo-300 dark:to-blue-400 font-extrabold tracking-tight text-3xl sm:text-4xl md:text-5xl font-mono text-center bg-transparent border-none outline-none p-0 cursor-pointer [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none focus:outline-none focus:ring-0 select-all"
+                style={{ width: `${Math.max(1, String(userBidDollars).length) * 1.5 + 0.1}ch` }}
+                className="text-transparent bg-clip-text bg-gradient-to-r from-purple-600 via-indigo-600 to-blue-600 dark:from-purple-400 dark:via-indigo-300 dark:to-blue-400 font-extrabold tracking-tight text-3xl sm:text-4xl md:text-5xl font-mono text-center bg-transparent border-0 outline-none p-0 cursor-pointer focus:outline-none focus:ring-0 select-all"
               />
             </div>
 
