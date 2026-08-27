@@ -299,8 +299,8 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ categories, topProduct
           </div>
         </h1>
 
-        {/* Subheading */}
-        <p className="text-xs sm:text-sm text-slate-600 dark:text-gray-300 font-medium">
+        {/* Subheading in a single clean line */}
+        <p className="text-xs sm:text-[13px] md:text-sm text-slate-600 dark:text-gray-300 font-medium max-w-4xl mx-auto whitespace-normal md:whitespace-nowrap">
           New spots start at €2. Paying less than the #1 price still puts you on the board at whatever place that bid can take.
         </p>
 

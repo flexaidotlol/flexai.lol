@@ -14,7 +14,7 @@ interface Props {
 }
 
 const {
-  title = 'FlexAI.lol — The Competitive Leaderboard for AI Products',
+  title = 'flexai.lol',
   description = 'Founders bid to rank #1. Climb above competing AI products in real-time on FlexAI.',
   image = '/og-flexai.png',
   canonicalUrl = Astro.url.href,
@@ -23,9 +23,7 @@ const {
 } = Astro.props;
 
 const currentPath = Astro.url.pathname;
-const dynamicTitle = rank && bidFormatted
-  ? `${title} is #${rank} (${bidFormatted}) on FlexAI.lol`
-  : title;
+const dynamicTitle = title;
 ---
 
 <!doctype html>
