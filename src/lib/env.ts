@@ -15,7 +15,7 @@ const envSchema = z.object({
   PUBLIC_STRIPE_PUBLISHABLE_KEY: z.string().optional().default(''),
   STRIPE_SECRET_KEY: z.string().optional().default(''),
   STRIPE_WEBHOOK_SECRET: z.string().optional().default(''),
-  STRIPE_CURRENCY: z.string().default('usd'),
+  STRIPE_CURRENCY: z.string().default('eur'),
   MINIMUM_BID_CENTS: z.coerce.number().default(200),
 
   // Email

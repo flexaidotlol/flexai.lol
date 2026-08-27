@@ -433,13 +433,13 @@ export const SubmitWizard: React.FC<SubmitWizardProps> = ({
                       : 'bg-slate-100 dark:bg-dark-800 border-slate-300 dark:border-dark-border text-slate-700 dark:text-gray-300 hover:text-slate-900 dark:hover:text-white'
                   }`}
                 >
-                  ${preset}
+                  €{preset}
                 </button>
               ))}
             </div>
 
             <p className="text-[11px] text-slate-500 dark:text-gray-400 mt-2">
-              Minimum to claim #1 in {selectedCatObj?.name || 'this category'}: <strong>${minimumClaimDollars}</strong>. You can enter any higher custom amount.
+              Minimum to claim #1 in {selectedCatObj?.name || 'this category'}: <strong>€{minimumClaimDollars}</strong>. You can enter any higher custom amount.
             </p>
 
             {/* Dynamic Rank Message */}
@@ -486,8 +486,8 @@ export const SubmitWizard: React.FC<SubmitWizardProps> = ({
                 <>
                   <span>
                     {detectedProduct?.found
-                      ? `Pay $${formData.amount_dollars} Difference to Claim #1`
-                      : `Pay $${formData.amount_dollars} & Enter Leaderboard`}
+                      ? `Pay €${formData.amount_dollars} Difference to Claim #1`
+                      : `Pay €${formData.amount_dollars} & Enter Leaderboard`}
                   </span>
                   <ArrowRight className="w-5 h-5" />
                 </>

@@ -140,10 +140,10 @@ export const OutflexModal: React.FC<OutflexModalProps> = ({
           {/* Bid Amount Input & Quick Chips */}
           <div>
             <label className="block text-xs font-bold uppercase tracking-wider text-slate-900 dark:text-white mb-2">
-              Bid Increase (USD)
+              Bid Increase (EUR)
             </label>
             <div className="relative">
-              <span className="absolute left-4 top-1/2 -translate-y-1/2 text-xl font-bold text-slate-400 dark:text-gray-400">$</span>
+              <span className="absolute left-4 top-1/2 -translate-y-1/2 text-xl font-bold text-slate-400 dark:text-gray-400">€</span>
               <input
                 type="number"
                 min={minimumOutflexDollars}
@@ -169,12 +169,12 @@ export const OutflexModal: React.FC<OutflexModalProps> = ({
                       : 'bg-slate-100 dark:bg-dark-800 border-slate-200 dark:border-dark-border text-slate-700 dark:text-gray-300 hover:text-slate-900 dark:hover:text-white'
                   }`}
                 >
-                  +${preset}
+                  +€{preset}
                 </button>
               ))}
             </div>
             <p className="text-[11px] text-slate-500 dark:text-gray-400 mt-2">
-              Minimum to claim #1 in this category: <strong>${minimumOutflexDollars}</strong>. Higher custom bids are allowed.
+              Minimum to claim #1 in this category: <strong>€{minimumOutflexDollars}</strong>. Higher custom bids are allowed.
             </p>
           </div>
 
@@ -242,7 +242,7 @@ export const OutflexModal: React.FC<OutflexModalProps> = ({
               </>
             ) : (
               <>
-                <span>Flex my AI for ${bidAmountDollars}</span>
+                <span>Flex my AI for €{bidAmountDollars}</span>
                 <ArrowRight className="w-4 h-4" />
               </>
             )}

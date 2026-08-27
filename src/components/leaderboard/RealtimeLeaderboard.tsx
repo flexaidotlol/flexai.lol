@@ -264,7 +264,7 @@ export const RealtimeLeaderboard: React.FC<RealtimeLeaderboardProps> = ({
                           className="inline-flex items-center gap-1.5 px-4 py-1 rounded-full text-[11px] font-bold bg-white dark:bg-dark-850 hover:bg-gradient-to-r hover:from-purple-600 hover:to-indigo-600 hover:text-white text-purple-700 dark:text-purple-300 border border-purple-200 dark:border-purple-800/80 shadow-xs hover:shadow-glow-purple transition-all duration-150 cursor-pointer group"
                         >
                           <span className="text-purple-500 dark:text-purple-400 group-hover:text-white">claim this rank for</span>
-                          <span className="text-purple-900 dark:text-purple-200 group-hover:text-white">${claimPriceDollars.toLocaleString()}</span>
+                          <span className="text-purple-900 dark:text-purple-200 group-hover:text-white">€{claimPriceDollars.toLocaleString()}</span>
                         </button>
                       </div>
                     )}

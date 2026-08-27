@@ -1,20 +1,20 @@
 export function centsToDollars(cents: number): string {
-  const dollars = cents / 100;
+  const euros = cents / 100;
   return new Intl.NumberFormat('en-US', {
     style: 'currency',
-    currency: 'USD',
+    currency: 'EUR',
     maximumFractionDigits: cents % 100 === 0 ? 0 : 2,
     minimumFractionDigits: cents % 100 === 0 ? 0 : 2,
-  }).format(dollars);
+  }).format(euros);
 }
 
 export function formatCompactDollars(cents: number): string {
-  const dollars = cents / 100;
+  const euros = cents / 100;
   return new Intl.NumberFormat('en-US', {
     style: 'currency',
-    currency: 'USD',
+    currency: 'EUR',
     maximumFractionDigits: 0,
-  }).format(dollars);
+  }).format(euros);
 }
 
 export function formatNumber(num: number): string {

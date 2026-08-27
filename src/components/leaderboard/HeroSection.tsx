@@ -252,20 +252,20 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ categories, topProduct
           </a>
         </div>
 
-        {/* Main Title - Dynamically updates with chosen category price and interactive +/- stepper */}
+        {/* Main Title - Dynamically updates with chosen category price and interactive +/- stepper in EUR */}
         <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold tracking-tight text-slate-900 dark:text-white flex items-center justify-center flex-wrap gap-2 sm:gap-3">
           <span>Claim #{projectedRank} for</span>
           <div className="inline-flex items-center gap-1 sm:gap-1.5 bg-white dark:bg-dark-900 border-2 border-purple-500/50 hover:border-purple-500 focus-within:border-purple-500 rounded-2xl px-2 py-1 shadow-sm transition-all">
             <button
               type="button"
               onClick={handleDecrement}
-              className="w-7 h-7 sm:w-8 sm:h-8 rounded-xl flex items-center justify-center text-slate-500 dark:text-gray-400 hover:text-purple-600 dark:hover:text-purple-300 hover:bg-purple-50 dark:hover:bg-dark-800 transition-colors font-bold text-lg cursor-pointer"
+              className="w-7 h-7 sm:w-8 sm:h-8 rounded-xl flex items-center justify-center text-slate-600 dark:text-gray-300 hover:text-purple-600 dark:hover:text-purple-300 hover:bg-purple-50 dark:hover:bg-dark-800 transition-colors font-bold text-lg cursor-pointer"
               aria-label="Decrease price"
             >
               -
             </button>
             <div className="flex items-center">
-              <span className="text-xl sm:text-2xl font-black text-purple-600 dark:text-purple-400 font-mono">$</span>
+              <span className="text-xl sm:text-2xl font-black text-purple-600 dark:text-purple-400 font-mono">€</span>
               <input
                 type="number"
                 min="2"
@@ -278,7 +278,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ categories, topProduct
             <button
               type="button"
               onClick={handleIncrement}
-              className="w-7 h-7 sm:w-8 sm:h-8 rounded-xl flex items-center justify-center text-slate-500 dark:text-gray-400 hover:text-purple-600 dark:hover:text-purple-300 hover:bg-purple-50 dark:hover:bg-dark-800 transition-colors font-bold text-lg cursor-pointer"
+              className="w-7 h-7 sm:w-8 sm:h-8 rounded-xl flex items-center justify-center text-slate-600 dark:text-gray-300 hover:text-purple-600 dark:hover:text-purple-300 hover:bg-purple-50 dark:hover:bg-dark-800 transition-colors font-bold text-lg cursor-pointer"
               aria-label="Increase price"
             >
               +
@@ -288,7 +288,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ categories, topProduct
 
         {/* Subheading */}
         <p className="text-xs sm:text-sm text-slate-600 dark:text-gray-300 font-medium">
-          New spots start at $2. Paying less than the #1 price still puts you on the board at whatever place that bid can take.
+          New spots start at €2. Paying less than the #1 price still puts you on the board at whatever place that bid can take.
         </p>
 
         {/* Interactive Fast Input Form */}
@@ -367,10 +367,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ categories, topProduct
             )}
           </div>
 
-          {/* CTA Button:
-              - If not ready (no category selected / no input): Says "Flex AI Software", disabled/unclickable
-              - When ready: Says "Flex AI Software for $n", active and clickable
-          */}
+          {/* CTA Button */}
           <button
             type="submit"
             disabled={!isFormReady}
@@ -380,7 +377,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ categories, topProduct
                 : 'text-slate-400 dark:text-gray-500 bg-slate-100 dark:bg-dark-800/80 border border-slate-200 dark:border-dark-border cursor-not-allowed opacity-70'
             }`}
           >
-            {isFormReady ? `Claim #${projectedRank} for $${userBidDollars}` : 'Flex AI Software'}
+            {isFormReady ? `Claim #${projectedRank} for €${userBidDollars}` : 'Flex AI Software'}
           </button>
         </form>
 
@@ -395,11 +392,11 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ categories, topProduct
             <div className="flex items-center gap-2">
               <span className="w-2 h-2 rounded-full bg-emerald-500 animate-ping"></span>
               <span>
-                <strong>{detectedProduct.product.name}</strong> detected (Rank #{detectedProduct.product.rank || 1} with ${Math.round((detectedProduct.product.current_bid_cents || 0) / 100)} staked).
+                <strong>{detectedProduct.product.name}</strong> detected (Rank #{detectedProduct.product.rank || 1} with €{Math.round((detectedProduct.product.current_bid_cents || 0) / 100)} staked).
               </span>
             </div>
             <span className="font-bold text-emerald-600 dark:text-emerald-400 ml-2">
-              Pay ${detectedProduct.diffDollarsToClaimFirst} to be #1
+              Pay €{detectedProduct.diffDollarsToClaimFirst} to be #1
             </span>
           </div>
         )}
