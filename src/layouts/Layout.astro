@@ -3,6 +3,8 @@ import '../styles/global.css';
 import { Navbar } from '../components/layout/Navbar';
 import Footer from '../components/layout/Footer.astro';
 import PostHog from '../components/posthog.astro';
+import { recordVisitorHit } from '../lib/data/visitor-store';
+import { hashVisitor } from '../lib/security';
 
 interface Props {
   title?: string;
@@ -21,6 +23,17 @@ const {
   rank,
   bidFormatted,
 } = Astro.props;
+
+// Record real-time unique visitor hit immediately on SSR
+try {
+  const forwarded = Astro.request.headers.get('x-forwarded-for');
+  const realIp = Astro.request.headers.get('x-real-ip');
+  const cfIp = Astro.request.headers.get('cf-connecting-ip');
+  const ip = (forwarded ? forwarded.split(',')[0].trim() : '') || realIp || cfIp || Astro.clientAddress || '127.0.0.1';
+  const userAgent = Astro.request.headers.get('user-agent') || '';
+  const visitorKey = hashVisitor(ip, userAgent);
+  recordVisitorHit(visitorKey);
+} catch {}
 
 const currentPath = Astro.url.pathname;
 const dynamicTitle = title;

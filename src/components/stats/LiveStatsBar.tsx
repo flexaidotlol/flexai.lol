@@ -111,15 +111,6 @@ export const LiveStatsBar: React.FC<LiveStatsBarProps> = ({ initialStats }) => {
           <span className="font-bold text-emerald-600 dark:text-emerald-400">{centsToDollars(stats.total_bids_cents)}</span>
           <span className="font-medium text-slate-700 dark:text-gray-300">earned in bids</span>
         </div>
-
-        {/* About Arena link */}
-        <a
-          href="/about"
-          className="inline-flex items-center gap-1 font-medium text-slate-500 dark:text-gray-400 hover:text-slate-900 dark:hover:text-white transition-colors ml-1 pl-2 border-l border-slate-200 dark:border-dark-border"
-        >
-          <span>Live Arena</span>
-          <ArrowRight className="w-3 h-3 text-purple-500 dark:text-purple-400" />
-        </a>
       </div>
     </div>
   );
