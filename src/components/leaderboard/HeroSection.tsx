@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { Globe, ChevronDown, Check, Plus, Minus, ArrowRight, Loader2, ShieldCheck } from 'lucide-react';
+import { Globe, ChevronDown, Check, Plus, Minus, ArrowRight, Loader2, ShieldCheck, AlertCircle } from 'lucide-react';
 import type { Category, Product } from '../../types';
 
 interface HeroSectionProps {
