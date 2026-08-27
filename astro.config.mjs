@@ -15,9 +15,7 @@ export default defineConfig({
   },
   integrations: [
     react(),
-    tailwind({
-      applyBaseStyles: false,
-    }),
+    tailwind(),
   ],
   vite: {
     ssr: {
