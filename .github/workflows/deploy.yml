@@ -60,6 +60,11 @@ jobs:
             echo "📁 Entering project directory: $APP_DIR"
             cd "$APP_DIR" || exit 1
 
+            # Backup existing .env if present
+            if [ -f "$APP_DIR/.env" ]; then
+              cp "$APP_DIR/.env" /tmp/flexai.env.bak
+            fi
+
             echo "📥 Syncing latest code from GitHub main..."
             git remote set-url origin https://github.com/flexaidotlol/flexai.lol.git 2>/dev/null || true
             git fetch --all --prune
@@ -67,6 +72,9 @@ jobs:
             git clean -fd
 
             echo "🔍 VPS Live Git Commit: $(git log -1 --oneline)"
+
+            echo "⚙️ Initializing production environment configuration..."
+            echo "IyAtLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0KIyBBUFAKIyAtLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0KClBVQkxJQ19TSVRFX1VSTD1odHRwczovL2ZsZXhhaS5sb2wKUFVCTElDX0FQUF9OQU1FPUZsZXhBSQpOT0RFX0VOVj1wcm9kdWN0aW9uCgoKIyAtLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0KIyBTVVBBQkFTRQojIC0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0KClBVQkxJQ19TVVBBQkFTRV9VUkw9aHR0cHM6Ly9pZnd5b2dvdXdzYmJ3eWFwb2JiZS5zdXBhYmFzZS5jbwpQVUJMSUNfU1VQQUJBU0VfUFVCTElTSEFCTEVfS0VZPXNiX3B1Ymxpc2hhYmxlX1V6N0YycTlEVU5ST05sTzFhNWg2eUFfUFhLWF92ZDIKU1VQQUJBU0VfU0VDUkVUX0tFWT1zYl9zZWNyZXRfVVhOTmNNRV93QXM1T1o5MXYwYnJrUV9iM0I0SDFScAoKCiMgLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tCiMgU1RSSVBFCiMgLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tCgpQVUJMSUNfU1RSSVBFX1BVQkxJU0hBQkxFX0tFWT1wa19saXZlXzUxVThuSTc3NkxhRjBtUXROMkl2ZGx4cGpWUGR3ZnN1dXZMWHExRjBhaGlYN1FwYXpYcGthdE9CYkFJOHJHOUp6YmhiaWllUWJWRzZHQmxOZXc2b0kzVUpTMDB1ajBBYnI4NwpTVFJJUEVfU0VDUkVUX0tFWT1za19saXZlXzUxVThuSTc3NkxhRjBtUXROVG9zWFRTU2pnOWZzdXN1aXFDWWtOamNVSXFsNDFTVlp5S0VEN0dUTW5ZY0dwR0tZYkdPTG93d05TNzdBOVlnNnZod1pvZ3daMDBCSTY3Q1pJVgpTVFJJUEVfV0VCSE9PS19TRUNSRVQ9d2hzZWNfc3Y3RkVRNjNlN0haTnpTYXUwakdKV0ZtdkJtbGJ3SkoKU1RSSVBFX0NVUlJFTkNZPWV1cgpNSU5JTVVNX0JJRF9DRU5UUz0yMDAKCgojIC0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLQojIEVNQUlMIC8gUkVTRU5ECiMgLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tCgpSRVNFTkRfQVBJX0tFWT0KRU1BSUxfRlJPTT1GbGV4QUkgPGhlbGxvQGZsZXhhaS5sb2w+CgoKIyAtLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0KIyBDTE9VREZMQVJFIFRVUk5TVElMRQojIC0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLQoKUFVCTElDX1RVUk5TVElMRV9TSVRFX0tFWT0weDRBQUFBQUFFZE54SHYyUHUxVU9kZGoKVFVSTlNUSUxFX1NFQ1JFVF9LRVk9MHg0QUFBQUFBRWROeEpnT0JjVFVBM3RKajMyOHdzV1JYdmcKCgojIC0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLQojIFBPU1RIT0cKIyAtLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0KClBVQkxJQ19QT1NUSE9HX0tFWT1waGNfdG5Gd1VNNlZQR2tHcFBHbUE5dGYyTHFvTm5uSlJLRUhUV1AzMmpHUE1ZQ2YKUFVCTElDX1BPU1RIT0dfSE9TVD1odHRwczovL3VzLmkucG9zdGhvZy5jb20KCgojIC0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLQojIFNFTlRSWQojIC0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLQoKUFVCTElDX1NFTlRSWV9EU049aHR0cHM6Ly8wMTFiYjBiZjhkMDFhNGM5N2QwNzFjYThhMTNkODQzY0BvNDUxMTk3OTI4NTA1MzQ0MC5pbmdlc3QuZGUuc2VudHJ5LmlvLzQ1MTE5NzkyODkwNTEyMTYKU0VOVFJZX0FVVEhfVE9LRU49c250cnlzX2V5SnBZWFFpT2pFM09EYzNPREE1TXpRdU5UUTBOVGdzSW5WeWJDSTZJbWgwZEhCek9pOHZjMlZ1ZEhKNUxtbHZJaXdpY21WbmFXOXVYM1Z5YkNJNkltaDBkSEJ6T2k4dlpHVXVjMlZ1ZEhKNUxtbHZJaXdpYjNKbklqb2labXhsZUdGcExYQmpJbjA9X0ZmaUVEbnByWmhtYU04NGdBMnBFM3pCTGhlRjJ0bGZGMzd2YXdIK2s2b2sKCgojIC0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLQojIElOVEVSTkFMIFNFQ1VSSVRZCiMgLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tCgpDUk9OX1NFQ1JFVD1mbGV4YWktY3Jvbi1zZWNyZXQtMjAyNgpBRE1JTl9TRUNSRVQ9ZmxleGFpLWFkbWluLW1hc3Rlci1rZXktMjAyNgpJUF9IQVNIX1NBTFQ9ZmxleGFpLXNhbHQtZGV2ZWxvcG1lbnQta2V5LTM0ODIK" | base64 -d > "$APP_DIR/.env"
 
             echo "🧹 Cleaning previous build cache..."
             rm -rf dist .astro node_modules/.astro
@@ -89,7 +97,7 @@ jobs:
             fi
 
             # Write clean systemd service file
-            printf "[Unit]\nDescription=FlexAI Astro SSR Node Server\nAfter=network.target\n\n[Service]\nType=simple\nUser=root\nWorkingDirectory=/var/www/flexai.lol\nEnvironment=NODE_ENV=production\nEnvironment=HOST=127.0.0.1\nEnvironment=PORT=4321\nExecStart=%s /var/www/flexai.lol/dist/server/entry.mjs\nRestart=always\nRestartSec=2\nStandardOutput=journal\nStandardError=journal\n\n[Install]\nWantedBy=multi-user.target\n" "$NODE_BIN" > /etc/systemd/system/flexai.service
+            printf "[Unit]\nDescription=FlexAI Astro SSR Node Server\nAfter=network.target\n\n[Service]\nType=simple\nUser=root\nWorkingDirectory=/var/www/flexai.lol\nEnvironmentFile=/var/www/flexai.lol/.env\nEnvironment=NODE_ENV=production\nEnvironment=HOST=127.0.0.1\nEnvironment=PORT=4321\nExecStart=%s /var/www/flexai.lol/dist/server/entry.mjs\nRestart=always\nRestartSec=2\nStandardOutput=journal\nStandardError=journal\n\n[Install]\nWantedBy=multi-user.target\n" "$NODE_BIN" > /etc/systemd/system/flexai.service
 
             systemctl daemon-reload
             systemctl enable flexai

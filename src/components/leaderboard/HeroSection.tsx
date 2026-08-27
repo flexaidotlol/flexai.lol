@@ -281,7 +281,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ categories, topProduct
       }
 
       if (data.checkoutUrl) {
-        window.location.href = data.checkoutUrl;
+        window.location.assign(data.checkoutUrl);
       } else {
         throw new Error('No checkout URL returned from payment gateway');
       }
