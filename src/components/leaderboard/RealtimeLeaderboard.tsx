@@ -305,30 +305,20 @@ export const RealtimeLeaderboard: React.FC<RealtimeLeaderboardProps> = ({
           ) : (
             <div className="py-12 px-6 text-center rounded-3xl bg-white dark:bg-dark-900 border border-dashed border-slate-300 dark:border-dark-border shadow-sm space-y-3 max-w-xl mx-auto my-4">
               <div className="flex justify-center items-center">
-                <div className="w-16 h-16 rounded-2xl bg-slate-100 dark:bg-dark-800 border border-slate-200 dark:border-dark-border/80 flex items-center justify-center text-slate-700 dark:text-gray-300 shadow-inner">
+                <div className="w-16 h-16 rounded-2xl bg-slate-100 dark:bg-dark-800 border border-slate-200 dark:border-dark-border/80 flex items-center justify-center text-slate-800 dark:text-gray-200 shadow-inner">
                   <svg
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="1.8"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    className="w-10 h-10"
+                    viewBox="0 0 100 100"
+                    fill="currentColor"
+                    className="w-11 h-11"
                   >
-                    {/* Antenna with bulb */}
-                    <circle cx="12" cy="2.5" r="1" fill="currentColor" stroke="none" />
-                    <path d="M12 3.5v3" />
-                    {/* Side Ears */}
-                    <path d="M4.5 12h-2m2 0a2.5 2.5 0 0 0 0-5v5m0 0a2.5 2.5 0 0 1 0 5v-5" />
-                    <path d="M19.5 12h2m-2 0a2.5 2.5 0 0 0 0-5v5m0 0a2.5 2.5 0 0 1 0 5v-5" />
-                    {/* Head Outline */}
-                    <rect x="4.5" y="6.5" width="15" height="14" rx="3.5" />
-                    {/* Left Eye: X */}
-                    <path d="M8 10.5l2.5 2.5m0-2.5L8 13" />
-                    {/* Right Eye: O */}
-                    <circle cx="15.25" cy="11.75" r="1.5" />
-                    {/* Squiggly mouth */}
-                    <path d="M8 17l1.7-1 1.7 1 1.7-1 1.7 1" />
+                    {/* Main Robot Body & Antenna */}
+                    <path d="M92.383,39.336h-2.508v-1.186c0-9.883-8.018-17.901-17.901-17.901h-5.809v-2.821c0-3.544-3.427-6.426-7.641-6.426h-6.908 V6.466h10.886c0.501,2.456,2.678,4.311,5.28,4.311c2.971,0,5.389-2.417,5.389-5.389S70.753,0,67.782,0 c-2.204,0-4.098,1.333-4.932,3.233H48.383v7.77h-6.908c-4.214,0-7.641,2.882-7.641,6.426v2.821h-5.809 c-9.883,0-17.901,8.018-17.901,17.901v1.186H7.617c-3.544,0-6.426,3.427-6.426,7.641l0,17.049c0,4.214,2.882,7.641,6.426,7.641 h2.508v10.432c0,9.883,8.018,17.901,17.901,17.901h43.949c9.883,0,17.901-8.018,17.901-17.901V71.667h2.508 c3.544,0,6.426-3.427,6.426-7.641V46.977C98.809,42.763,95.927,39.336,92.383,39.336z M67.782,2.155c1.783,0,3.233,1.45,3.233,3.233 s-1.45,3.233-3.233,3.233c-1.783,0-3.233-1.45-3.233-3.233S65.999,2.155,67.782,2.155z M37.068,17.429 c0-2.048,1.972-3.707,4.408-3.707h17.049c2.436,0,4.408,1.659,4.408,3.707v2.821H37.068V17.429z M7.617,68.434 c-2.048,0-3.707-1.972-3.707-4.408V46.977c0-2.436,1.659-4.408,3.707-4.408h2.508v25.865H7.617z M86.642,82.099 c0,8.083-6.585,14.668-14.668,14.668H28.026c-8.083,0-14.668-6.585-14.668-14.668V38.151c0-8.083,6.585-14.668,14.668-14.668h43.949 c8.083,0,14.668,6.585,14.668,14.668V82.099z M96.09,64.026c0,2.436-1.659,4.408-3.707,4.408h-2.508V42.569h2.508 c2.048,0,3.707,1.972,3.707,4.408V64.026z" />
+                    {/* Face features (Left Eye X, Right Eye O, Mouth zigzag) */}
+                    <g fill="none" stroke="currentColor" strokeWidth="4.5" strokeLinecap="round" strokeLinejoin="round">
+                      <path d="M31 46 L43 58 M43 46 L31 58" />
+                      <circle cx="63" cy="52" r="6.5" />
+                      <path d="M33 74 L41 68 L49 74 L57 68 L65 74" />
+                    </g>
                   </svg>
                 </div>
               </div>
