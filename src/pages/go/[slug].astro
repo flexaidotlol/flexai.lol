@@ -1,0 +1,60 @@
+---
+import { getProductBySlug } from '../../services/leaderboard';
+import { supabaseServer } from '../../lib/supabase/server';
+import { memoryStore } from '../../lib/data/mock-store';
+import { hashVisitor } from '../../lib/security';
+
+export const prerender = false;
+
+const { slug } = Astro.params;
+
+if (!slug) {
+  return Astro.redirect('/');
+}
+
+const product = await getProductBySlug(slug);
+if (!product || !product.website_url) {
+  return Astro.redirect('/');
+}
+
+const ip = Astro.clientAddress || '127.0.0.1';
+const userAgent = Astro.request.headers.get('user-agent') || '';
+const referrer = Astro.request.headers.get('referer') || '';
+const visitorHash = hashVisitor(ip, userAgent);
+
+// Always record click in memoryStore for instant sync
+memoryStore.recordClick(product.id);
+
+// Track click safely in Supabase without exposing private data
+if (supabaseServer) {
+  try {
+    await supabaseServer.from('product_clicks').insert({
+      product_id: product.id,
+      visitor_hash: visitorHash,
+      referrer: referrer.substring(0, 255),
+      user_agent_category: userAgent.includes('Mobile') ? 'mobile' : 'desktop',
+    });
+
+    // Try RPC first, fallback to direct update
+    const { error: rpcErr } = await supabaseServer.rpc('increment_product_clicks', { p_product_id: product.id });
+    if (rpcErr) {
+      await supabaseServer
+        .from('products')
+        .update({
+          total_clicks: (product.total_clicks || 0) + 1,
+        })
+        .eq('id', product.id);
+    }
+  } catch (e) {
+    // Ignore error so redirect is never blocked
+  }
+}
+
+// Ensure safe protocol
+let targetUrl = product.website_url.trim();
+if (!targetUrl.startsWith('http://') && !targetUrl.startsWith('https://')) {
+  targetUrl = 'https://' + targetUrl;
+}
+
+return Astro.redirect(targetUrl, 302);
+---
