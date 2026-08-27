@@ -48,36 +48,47 @@ jobs:
             echo "--- Nginx Sites Configuration ---"
             grep -rh "proxy_pass\|root " /etc/nginx/sites-enabled/ 2>/dev/null || grep -rh "proxy_pass\|root " /etc/nginx/conf.d/ 2>/dev/null || true
 
-            # 2. Locate the EXACT FlexAI directory on VPS
-            APP_DIR="${{ secrets.VPS_APP_PATH }}"
+            # 1. Inspect Nginx configuration specifically for flexai.lol
+            echo "========================================="
+            echo "🔍 Inspecting Nginx configuration for flexai.lol"
+            echo "========================================="
+            NGINX_FLEXAI_CONF=$(grep -rl "flexai.lol" /etc/nginx/ 2>/dev/null | head -n 1 || true)
+            FLEXAI_PORT="4321"
 
-            # Try to get CWD of active process on port 4321
-            if [ -z "$APP_DIR" ]; then
-              NODE_PID=$(ss -tulpn | grep 4321 | grep -oE "pid=[0-9]+" | cut -d= -f2 | head -n 1 || true)
-              if [ -n "$NODE_PID" ] && [ -d "/proc/$NODE_PID/cwd" ]; then
-                PROC_DIR=$(readlink -f /proc/$NODE_PID/cwd 2>/dev/null || true)
-                if [ -n "$PROC_DIR" ] && [ -d "$PROC_DIR" ]; then
-                  APP_DIR="$PROC_DIR"
-                  echo "🎯 Found FlexAI from active process on port 4321: $APP_DIR"
-                fi
+            if [ -n "$NGINX_FLEXAI_CONF" ] && [ -f "$NGINX_FLEXAI_CONF" ]; then
+              echo "📄 Nginx config found: $NGINX_FLEXAI_CONF"
+              cat "$NGINX_FLEXAI_CONF"
+              DETECTED_PORT=$(grep "proxy_pass" "$NGINX_FLEXAI_CONF" | grep -oE "[0-9]{4,5}" | head -n 1 || true)
+              if [ -n "$DETECTED_PORT" ]; then
+                FLEXAI_PORT="$DETECTED_PORT"
               fi
+            else
+              echo "⚠️ No dedicated Nginx config with flexai.lol found, checking all sites..."
+              cat /etc/nginx/sites-enabled/* 2>/dev/null || true
             fi
 
-            # Fallback search specifically for flexai or FlexAI
-            if [ -z "$APP_DIR" ] || [ ! -d "$APP_DIR" ]; then
+            echo "🎯 Target listening port for flexai.lol: $FLEXAI_PORT"
+
+            # 2. Locate or clone FlexAI directory
+            APP_DIR="${{ secrets.VPS_APP_PATH }}"
+            if [ -z "$APP_DIR" ]; then
               APP_DIR=$(find /root /home /var/www /var /srv /opt -maxdepth 4 -type d -iname "*flexai*" 2>/dev/null | head -n 1 || true)
             fi
 
             if [ -z "$APP_DIR" ] || [ ! -d "$APP_DIR" ]; then
-              APP_DIR=$(find /root /home /var/www /var /srv /opt -maxdepth 5 -name "astro.config.mjs" 2>/dev/null | grep -i "flex" | head -n 1 | xargs dirname || true)
+              if [ -d "/var/www/flexai" ]; then
+                APP_DIR="/var/www/flexai"
+              elif [ -d "$HOME/FlexAI" ]; then
+                APP_DIR="$HOME/FlexAI"
+              else
+                echo "📥 Cloning flexai.lol directly into /var/www/flexai..."
+                mkdir -p /var/www/flexai
+                git clone https://github.com/flexaidotlol/flexai.lol.git /var/www/flexai
+                APP_DIR="/var/www/flexai"
+              fi
             fi
 
-            if [ -z "$APP_DIR" ]; then
-              echo "❌ Could not find FlexAI directory on VPS."
-              exit 1
-            fi
-
-            echo "🎯 FlexAI Directory: $APP_DIR"
+            echo "📁 Entering project directory: $APP_DIR"
             cd "$APP_DIR" || exit 1
 
             echo "📥 Fetching and syncing latest code from GitHub main..."
@@ -88,38 +99,34 @@ jobs:
             echo "📦 Running npm install..."
             npm install
 
-            echo "🔨 Running production build..."
+            echo "🔨 Running production astro build..."
             npm run build
 
-            # 3. Kill whatever process is currently occupying port 4321
-            echo "🔄 Freeing port 4321 and restarting PM2..."
-            fuser -k 4321/tcp 2>/dev/null || true
-            NODE_OLD_PID=$(ss -tulpn | grep 4321 | grep -oE "pid=[0-9]+" | cut -d= -f2 | head -n 1 || true)
-            if [ -n "$NODE_OLD_PID" ]; then
-              kill -9 "$NODE_OLD_PID" 2>/dev/null || true
-            fi
+            # 3. Clean restart PM2 on exact target port
+            echo "🔄 Starting FlexAI server on port $FLEXAI_PORT..."
+            fuser -k "$FLEXAI_PORT"/tcp 2>/dev/null || true
+            sleep 1
 
-            # 4. Start fresh PM2 service
             if command -v pm2 &> /dev/null; then
               pm2 delete flexai 2>/dev/null || true
-              HOST=0.0.0.0 PORT=4321 pm2 start dist/server/entry.mjs --name flexai --update-env
+              HOST=0.0.0.0 PORT=$FLEXAI_PORT pm2 start dist/server/entry.mjs --name flexai --update-env
               pm2 save --force
             fi
 
             sleep 2
-            # Verify if port 4321 is alive, if not launch direct node
-            if ! curl -s -o /dev/null -w "%{http_code}" http://127.0.0.1:4321 | grep -q "200\|301\|302"; then
-              echo "⚠️ Starting direct node server..."
-              HOST=0.0.0.0 PORT=4321 nohup node dist/server/entry.mjs > flexai.log 2>&1 &
+            # Verify if target port is responding
+            if ! curl -s -o /dev/null -w "%{http_code}" "http://127.0.0.1:$FLEXAI_PORT" | grep -q "200\|301\|302"; then
+              echo "⚠️ PM2 didn't respond, starting direct background node process..."
+              HOST=0.0.0.0 PORT=$FLEXAI_PORT nohup node dist/server/entry.mjs > flexai.log 2>&1 &
               sleep 2
             fi
 
-            echo "✅ Port 4321 response:"
-            curl -sI http://127.0.0.1:4321 | head -n 5 || true
+            echo "✅ Health check for port $FLEXAI_PORT:"
+            curl -sI "http://127.0.0.1:$FLEXAI_PORT" | head -n 5 || true
 
-            # 5. Reload Nginx
+            # 4. Reload Nginx
             if command -v nginx &> /dev/null; then
               nginx -t 2>/dev/null && nginx -s reload 2>/dev/null || true
             fi
 
-            echo "🎉 SUCCESS: FlexAI rebuilt and running live on port 4321!"
+            echo "🎉 SUCCESS: FlexAI rebuilt and running live on port $FLEXAI_PORT!"
