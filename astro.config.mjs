@@ -21,5 +21,8 @@ export default defineConfig({
     ssr: {
       noExternal: ['lucide-react'],
     },
+    build: {
+      cssCodeSplit: false,
+    },
   },
 });
