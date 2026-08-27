@@ -43,17 +43,14 @@ export const LeaderboardCard: React.FC<LeaderboardCardProps> = ({ product, rank,
             {isTop1 ? (
               <Crown
                 className="w-8 h-8 sm:w-9 sm:h-9 text-amber-500 fill-amber-400/25 stroke-[2] drop-shadow-[0_0_10px_rgba(245,158,11,0.75)] animate-pulse"
-                title="Rank #1 Champion (Gold Crown)"
               />
             ) : isTop2 ? (
               <Crown
                 className="w-7 h-7 sm:w-8 sm:h-8 text-slate-400 dark:text-slate-300 fill-slate-300/20 stroke-[2] drop-shadow-[0_0_8px_rgba(148,163,184,0.6)]"
-                title="Rank #2 (Silver Crown)"
               />
             ) : isTop3 ? (
               <Crown
                 className="w-7 h-7 sm:w-8 sm:h-8 text-amber-700 dark:text-amber-500 fill-amber-600/20 stroke-[2] drop-shadow-[0_0_8px_rgba(194,65,12,0.5)]"
-                title="Rank #3 (Bronze Crown)"
               />
             ) : (
               <span className="text-slate-400 dark:text-gray-500 font-bold text-sm sm:text-base">

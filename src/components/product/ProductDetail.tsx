@@ -71,17 +71,14 @@ export const ProductDetail: React.FC<ProductDetailProps> = ({ product, achieveme
               {product.rank === 1 ? (
                 <Crown
                   className="w-10 h-10 sm:w-12 sm:h-12 text-amber-500 fill-amber-400/25 stroke-[2] drop-shadow-[0_0_12px_rgba(245,158,11,0.8)]"
-                  title="Rank #1 Champion (Gold Crown)"
                 />
               ) : product.rank === 2 ? (
                 <Crown
                   className="w-9 h-9 sm:w-11 sm:h-11 text-slate-400 dark:text-slate-300 fill-slate-300/20 stroke-[2] drop-shadow-[0_0_10px_rgba(148,163,184,0.6)]"
-                  title="Rank #2 (Silver Crown)"
                 />
               ) : product.rank === 3 ? (
                 <Crown
                   className="w-9 h-9 sm:w-11 sm:h-11 text-amber-700 dark:text-amber-500 fill-amber-600/20 stroke-[2] drop-shadow-[0_0_10px_rgba(194,65,12,0.5)]"
-                  title="Rank #3 (Bronze Crown)"
                 />
               ) : (
                 <div className="w-12 h-12 rounded-2xl bg-slate-100 dark:bg-dark-800 border border-slate-200 dark:border-dark-border text-slate-900 dark:text-white font-black text-xl flex items-center justify-center">
