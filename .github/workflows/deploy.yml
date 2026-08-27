@@ -71,25 +71,22 @@ jobs:
             echo "🔨 Running production astro build..."
             npm run build
 
-            # 2. Restart server on port 4321
-            echo "🔄 Starting FlexAI server on port 4321..."
+            # 2. Flush in-memory PM2 daemon and start fresh server on port 4321
+            echo "🔄 Killing PM2 in-memory daemon and freeing port 4321..."
+            if command -v pm2 &> /dev/null; then
+              pm2 kill 2>/dev/null || true
+            fi
             fuser -k 4321/tcp 2>/dev/null || true
             sleep 1
 
             if command -v pm2 &> /dev/null; then
-              pm2 delete flexai 2>/dev/null || true
               HOST=0.0.0.0 PORT=4321 pm2 start dist/server/entry.mjs --name flexai --update-env
               pm2 save --force
+            else
+              HOST=0.0.0.0 PORT=4321 nohup node dist/server/entry.mjs > flexai.log 2>&1 &
             fi
 
             sleep 2
-            # Verify if port 4321 is responding
-            if ! curl -s -o /dev/null -w "%{http_code}" "http://127.0.0.1:4321" | grep -q "200\|301\|302"; then
-              echo "⚠️ Starting direct background node process..."
-              HOST=0.0.0.0 PORT=4321 nohup node dist/server/entry.mjs > flexai.log 2>&1 &
-              sleep 2
-            fi
-
             echo "✅ Health check for port 4321:"
             curl -sI "http://127.0.0.1:4321" | head -n 5 || true
 
