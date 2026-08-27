@@ -77,22 +77,45 @@ jobs:
             echo "🔨 Running production astro build..."
             npm run build
 
-            # 2. Flush in-memory PM2 daemon and start fresh server on port 4321
-            echo "🔄 Killing PM2 in-memory daemon and freeing port 4321..."
-            if command -v pm2 &> /dev/null; then
-              pm2 kill 2>/dev/null || true
-            fi
-            fuser -k 4321/tcp 2>/dev/null || true
-            sleep 2
+            # 2. Configure indestructible systemd service for FlexAI
+            NODE_BIN=$(which node || echo "/usr/bin/node")
+            echo "Node binary located at: $NODE_BIN"
 
-            if command -v pm2 &> /dev/null; then
-              HOST=0.0.0.0 PORT=4321 pm2 start dist/server/entry.mjs --name flexai --update-env
-              pm2 save --force
-            else
-              HOST=0.0.0.0 PORT=4321 nohup node dist/server/entry.mjs > flexai.log 2>&1 &
-            fi
+            cat << 'EOF' > /etc/systemd/system/flexai.service
+[Unit]
+Description=FlexAI Astro Production Server
+After=network.target
+
+[Service]
+Type=simple
+User=root
+WorkingDirectory=/var/www/flexai.lol
+Environment=NODE_ENV=production
+Environment=HOST=127.0.0.1
+Environment=PORT=4321
+ExecStart=/usr/bin/node /var/www/flexai.lol/dist/server/entry.mjs
+Restart=always
+RestartSec=2
+StandardOutput=journal
+StandardError=journal
+
+[Install]
+WantedBy=multi-user.target
+EOF
+
+            sed -i "s|/usr/bin/node|$NODE_BIN|g" /etc/systemd/system/flexai.service
+
+            # Clean any old processes and restart systemd service
+            fuser -k 4321/tcp 2>/dev/null || true
+            sleep 1
+            systemctl daemon-reload
+            systemctl enable flexai
+            systemctl restart flexai
 
             sleep 3
+            echo "✅ Checking FlexAI service status:"
+            systemctl status flexai --no-pager -l || true
+
             echo "✅ Health check for port 4321:"
             curl -sI "http://127.0.0.1:4321" | head -n 5 || true
 
@@ -101,7 +124,7 @@ jobs:
 
             # 3. Reload Nginx
             if command -v nginx &> /dev/null; then
-              nginx -t 2>/dev/null && (systemctl restart nginx 2>/dev/null || nginx -s reload 2>/dev/null || true)
+              nginx -t 2>/dev/null && (systemctl reload nginx 2>/dev/null || systemctl restart nginx 2>/dev/null || nginx -s reload 2>/dev/null || true)
             fi
 
-            echo "🎉 SUCCESS: FlexAI rebuilt and running live on port 4321!"
+            echo "🎉 SUCCESS: FlexAI rebuilt and running live on port 4321 via systemd!"
