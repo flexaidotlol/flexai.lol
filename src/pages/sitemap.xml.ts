@@ -66,3 +66,6 @@ ${allEntries
     },
   });
 };
+
+export const HEAD: APIRoute = GET;
+
