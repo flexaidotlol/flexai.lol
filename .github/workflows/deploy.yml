@@ -27,41 +27,42 @@ jobs:
             
             # Find and enter project directory
             APP_DIR="${{ secrets.VPS_APP_PATH }}"
-            if [ -z "$APP_DIR" ]; then
-              if [ -d "/var/www/flexai" ]; then
-                APP_DIR="/var/www/flexai"
-              elif [ -d "/var/www/flexai.lol" ]; then
-                APP_DIR="/var/www/flexai.lol"
-              elif [ -d "$HOME/FlexAI" ]; then
-                APP_DIR="$HOME/FlexAI"
-              elif [ -d "$HOME/flexai.lol" ]; then
-                APP_DIR="$HOME/flexai.lol"
-              else
-                APP_DIR="/root/FlexAI"
-              fi
+            if [ -z "$APP_DIR" ] || [ ! -d "$APP_DIR" ]; then
+              APP_DIR=$(find /root /var/www /home /var -maxdepth 4 -name "astro.config.mjs" 2>/dev/null | head -n 1 | xargs dirname)
             fi
 
-            echo "📁 Entering directory: $APP_DIR"
+            if [ -z "$APP_DIR" ] || [ ! -d "$APP_DIR" ]; then
+              APP_DIR=$(pwd)
+            fi
+
+            echo "📁 Target directory: $APP_DIR"
             cd "$APP_DIR" || exit 1
 
-            echo "📥 Pulling latest changes from GitHub..."
-            git reset --hard HEAD
-            git pull origin main
+            echo "📥 Fetching and resetting to latest origin/main..."
+            git remote set-url origin https://github.com/flexaidotlol/flexai.lol.git 2>/dev/null || true
+            git fetch origin main
+            git reset --hard origin/main
 
-            echo "📦 Installing dependencies..."
+            echo "📦 Installing npm dependencies..."
             npm install --production=false
 
-            echo "🔨 Building Astro application..."
+            echo "🔨 Running production build..."
             npm run build
 
-            echo "🔄 Restarting application service..."
+            echo "🔄 Reloading PM2 and services..."
             if command -v pm2 &> /dev/null; then
-              pm2 restart flexai || pm2 restart all || pm2 start dist/server/entry.mjs --name flexai
+              pm2 reload all --update-env || pm2 restart all || pm2 start dist/server/entry.mjs --name flexai
               pm2 save
-            elif systemctl is-active --quiet flexai; then
+            fi
+
+            # If systemd flexai service exists
+            if systemctl is-active --quiet flexai 2>/dev/null; then
               systemctl restart flexai
-            else
-              echo "⚠️ PM2/Systemd service check completed."
+            fi
+
+            # Clear any Nginx cache if exists
+            if command -v nginx &> /dev/null; then
+              nginx -s reload 2>/dev/null || true
             fi
 
             echo "✅ Deployment completed successfully!"

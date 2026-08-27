@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { Globe, ChevronDown, Check, Plus, ArrowRight, Loader2, ShieldCheck } from 'lucide-react';
+import { Globe, ChevronDown, Check, Plus, Minus, ArrowRight, Loader2, ShieldCheck } from 'lucide-react';
 import type { Category, Product } from '../../types';
 
 interface HeroSectionProps {
@@ -252,36 +252,44 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ categories, topProduct
           </a>
         </div>
 
-        {/* Main Title - Dynamically updates with chosen category price and interactive +/- stepper in EUR */}
-        <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold tracking-tight text-slate-900 dark:text-white flex items-center justify-center flex-wrap gap-2 sm:gap-3">
+        {/* Main Title - Seamless Inline Editable Stepper in EUR */}
+        <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold tracking-tight text-slate-900 dark:text-white flex items-center justify-center flex-wrap gap-2.5">
           <span>Claim #{projectedRank} for</span>
-          <div className="inline-flex items-center gap-1 sm:gap-1.5 bg-white dark:bg-dark-900 border-2 border-purple-500/50 hover:border-purple-500 focus-within:border-purple-500 rounded-2xl px-2 py-1 shadow-sm transition-all">
+          <div className="inline-flex items-center gap-1.5 align-middle">
+            {/* Minus Button */}
             <button
               type="button"
               onClick={handleDecrement}
-              className="w-7 h-7 sm:w-8 sm:h-8 rounded-xl flex items-center justify-center text-slate-600 dark:text-gray-300 hover:text-purple-600 dark:hover:text-purple-300 hover:bg-purple-50 dark:hover:bg-dark-800 transition-colors font-bold text-lg cursor-pointer"
+              className="w-8 h-8 sm:w-9 sm:h-9 rounded-full flex items-center justify-center bg-purple-100 dark:bg-dark-800 hover:bg-purple-600 hover:text-white text-purple-700 dark:text-purple-300 border border-purple-300 dark:border-purple-800 transition-all font-bold cursor-pointer shadow-xs"
               aria-label="Decrease price"
             >
-              -
+              <Minus className="w-4 h-4 stroke-[3]" />
             </button>
-            <div className="flex items-center">
-              <span className="text-xl sm:text-2xl font-black text-purple-600 dark:text-purple-400 font-mono">€</span>
+
+            {/* Seamless Inline Price - Looks like text, fully editable */}
+            <div className="inline-flex items-center relative px-0.5 group">
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-600 via-indigo-600 to-blue-600 dark:from-purple-400 dark:via-indigo-300 dark:to-blue-400 font-extrabold tracking-tight drop-shadow-[0_0_20px_rgba(139,92,246,0.4)] text-3xl sm:text-4xl md:text-5xl font-mono">
+                €
+              </span>
               <input
                 type="number"
                 min="2"
                 step="1"
                 value={userBidDollars}
                 onChange={handlePriceChange}
-                className="w-16 sm:w-24 text-center text-2xl sm:text-3xl font-black text-slate-900 dark:text-white bg-transparent outline-none font-mono tracking-tight"
+                style={{ width: `${Math.max(1, String(userBidDollars).length) * 1.5 + 0.5}ch` }}
+                className="text-transparent bg-clip-text bg-gradient-to-r from-purple-600 via-indigo-600 to-blue-600 dark:from-purple-400 dark:via-indigo-300 dark:to-blue-400 font-extrabold tracking-tight drop-shadow-[0_0_20px_rgba(139,92,246,0.4)] text-3xl sm:text-4xl md:text-5xl font-mono text-center bg-transparent border-b-2 border-dashed border-purple-400/40 hover:border-purple-500 focus:border-purple-500 outline-none p-0 cursor-pointer transition-colors"
               />
             </div>
+
+            {/* Plus Button */}
             <button
               type="button"
               onClick={handleIncrement}
-              className="w-7 h-7 sm:w-8 sm:h-8 rounded-xl flex items-center justify-center text-slate-600 dark:text-gray-300 hover:text-purple-600 dark:hover:text-purple-300 hover:bg-purple-50 dark:hover:bg-dark-800 transition-colors font-bold text-lg cursor-pointer"
+              className="w-8 h-8 sm:w-9 sm:h-9 rounded-full flex items-center justify-center bg-purple-100 dark:bg-dark-800 hover:bg-purple-600 hover:text-white text-purple-700 dark:text-purple-300 border border-purple-300 dark:border-purple-800 transition-all font-bold cursor-pointer shadow-xs"
               aria-label="Increase price"
             >
-              +
+              <Plus className="w-4 h-4 stroke-[3]" />
             </button>
           </div>
         </h1>
