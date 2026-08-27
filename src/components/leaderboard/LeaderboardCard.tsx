@@ -126,7 +126,7 @@ export const LeaderboardCard: React.FC<LeaderboardCardProps> = ({ product, rank,
           </div>
         </div>
 
-        {/* Right Section: Bid Amount + Change + Outflex Action */}
+        {/* Right Section: Bid Amount + Status */}
         <div className="flex items-center justify-between md:justify-end gap-4 sm:gap-6 pt-3 md:pt-0 border-t md:border-t-0 border-slate-200 dark:border-dark-border/50 shrink-0">
           <div className="text-right">
             <div className="text-xl sm:text-2xl font-bold text-slate-900 dark:text-white tracking-tight">
@@ -146,16 +146,6 @@ export const LeaderboardCard: React.FC<LeaderboardCardProps> = ({ product, rank,
               <div className="text-xs text-slate-400 dark:text-gray-400 font-medium mt-0.5">verified bid</div>
             )}
           </div>
-
-          {/* Outflex Action Button */}
-          {onOutflexClick && (
-            <button
-              onClick={() => onOutflexClick(product)}
-              className="px-4 py-2 rounded-xl text-xs font-bold text-slate-800 dark:text-white bg-slate-100 dark:bg-dark-800 hover:bg-gradient-to-r hover:from-purple-600 hover:to-indigo-600 hover:text-white border border-slate-300 dark:border-dark-border hover:border-purple-400/40 transition-all shadow-sm"
-            >
-              Outflex
-            </button>
-          )}
         </div>
       </div>
     </div>
