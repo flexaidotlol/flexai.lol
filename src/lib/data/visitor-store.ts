@@ -7,50 +7,46 @@ interface PersistedVisitorData {
   last_updated: string;
 }
 
-// Store data in a persistent location
-const DATA_DIR = path.resolve(process.cwd(), 'data');
-const DATA_FILE = path.join(DATA_DIR, 'visitors.json');
-
 // In-memory active presence tracker: sessionId/visitorKey -> lastSeenTimestamp
 export const activePresenceMap = new Map<string, number>();
 
 // In-memory cache for fast lookups
-let totalVisitors = 0;
+let totalVisitors = 7;
 const uniqueHashesSet = new Set<string>();
 let isLoaded = false;
-let saveTimeout: NodeJS.Timeout | null = null;
+let saveTimeout: any = null;
+
+function getStorePath(): string {
+  try {
+    return path.resolve(process.cwd(), 'data', 'visitors.json');
+  } catch {
+    return '/tmp/flexai_visitors.json';
+  }
+}
 
 function loadPersistedData() {
   if (isLoaded) return;
+  isLoaded = true;
   try {
-    if (!fs.existsSync(DATA_DIR)) {
-      fs.mkdirSync(DATA_DIR, { recursive: true });
+    const filePath = getStorePath();
+    const dir = path.dirname(filePath);
+    if (!fs.existsSync(dir)) {
+      fs.mkdirSync(dir, { recursive: true });
     }
 
-    if (fs.existsSync(DATA_FILE)) {
-      const raw = fs.readFileSync(DATA_FILE, 'utf-8');
+    if (fs.existsSync(filePath)) {
+      const raw = fs.readFileSync(filePath, 'utf-8');
       const parsed: PersistedVisitorData = JSON.parse(raw);
-      totalVisitors = Math.max(parsed.total_visitors || 0, parsed.unique_hashes?.length || 0);
+      totalVisitors = Math.max(parsed.total_visitors || 7, parsed.unique_hashes?.length || 0);
       if (Array.isArray(parsed.unique_hashes)) {
         for (const h of parsed.unique_hashes) {
           uniqueHashesSet.add(h);
         }
       }
-    } else {
-      // Initialize with base visitors
-      totalVisitors = 1;
-      const initial: PersistedVisitorData = {
-        total_visitors: 1,
-        unique_hashes: [],
-        last_updated: new Date().toISOString(),
-      };
-      fs.writeFileSync(DATA_FILE, JSON.stringify(initial, null, 2), 'utf-8');
     }
   } catch (err) {
-    console.error('Error loading visitor data from disk:', err);
-    totalVisitors = Math.max(1, totalVisitors);
+    // Non-fatal, fallback to memory
   }
-  isLoaded = true;
 }
 
 function scheduleSave() {
@@ -58,19 +54,21 @@ function scheduleSave() {
   saveTimeout = setTimeout(() => {
     saveTimeout = null;
     try {
-      if (!fs.existsSync(DATA_DIR)) {
-        fs.mkdirSync(DATA_DIR, { recursive: true });
+      const filePath = getStorePath();
+      const dir = path.dirname(filePath);
+      if (!fs.existsSync(dir)) {
+        fs.mkdirSync(dir, { recursive: true });
       }
       const dataToSave: PersistedVisitorData = {
         total_visitors: Math.max(totalVisitors, uniqueHashesSet.size),
-        unique_hashes: Array.from(uniqueHashesSet).slice(-50000), // Retain last 50k unique hashes
+        unique_hashes: Array.from(uniqueHashesSet).slice(-20000),
         last_updated: new Date().toISOString(),
       };
-      fs.writeFileSync(DATA_FILE, JSON.stringify(dataToSave, null, 2), 'utf-8');
+      fs.writeFileSync(filePath, JSON.stringify(dataToSave), 'utf-8');
     } catch (err) {
-      console.error('Error saving visitor data to disk:', err);
+      // Non-fatal
     }
-  }, 1500);
+  }, 2000);
 }
 
 export function recordVisitorHit(visitorKey: string): { online_users: number; total_visitors: number } {
