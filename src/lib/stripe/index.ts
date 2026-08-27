@@ -59,7 +59,7 @@ export async function createStripeCheckoutSession(params: CreateCheckoutParams):
         amountCents: amountCents.toString(),
       },
       success_url: `${returnUrl}?session_id={CHECKOUT_SESSION_ID}&bid_id=${bidId}&product_id=${productId}&status=success`,
-      cancel_url: `${returnUrl}?status=cancelled`,
+      cancel_url: `${returnUrl.replace(/\/bid\/success\/?$/, '') || returnUrl}/`,
     });
 
     return {

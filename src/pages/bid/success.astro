@@ -6,10 +6,16 @@ import { getProductByBidId } from '../../services/bids';
 
 export const prerender = false;
 
+const status = Astro.url.searchParams.get('status');
 const sessionId = Astro.url.searchParams.get('session_id') || undefined;
 const bidId = Astro.url.searchParams.get('bid_id') || undefined;
 const productParam = Astro.url.searchParams.get('product') || Astro.url.searchParams.get('product_id') || undefined;
 const isSimulated = Astro.url.searchParams.get('simulated') === 'true';
+
+// If payment was cancelled or no valid session exists, redirect immediately to homepage
+if (status === 'cancelled' || (!sessionId && !isSimulated)) {
+  return Astro.redirect('/');
+}
 
 const categories = await getCategories();
 
