@@ -29,16 +29,24 @@ jobs:
             echo "Host: $(hostname)"
             echo "========================================="
 
-            # 1. Source full environment and paths
+            # 1. Environment & Paths
             export NVM_DIR="$HOME/.nvm"
             [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
             [ -s "$HOME/.profile" ] && \. "$HOME/.profile"
             [ -s "$HOME/.bashrc" ] && \. "$HOME/.bashrc"
             export PATH="/root/.nvm/versions/node/$(ls /root/.nvm/versions/node 2>/dev/null | tail -n 1)/bin:$HOME/.nvm/versions/node/$(ls $HOME/.nvm/versions/node 2>/dev/null | tail -n 1)/bin:/usr/local/bin:/usr/bin:/bin:/usr/local/sbin:/usr/sbin:/sbin:$PATH"
 
-            echo "Node: $(which node 2>/dev/null || echo 'not in standard PATH')"
-            echo "NPM: $(which npm 2>/dev/null || echo 'not in standard PATH')"
-            echo "PM2: $(which pm2 2>/dev/null || echo 'not in standard PATH')"
+            echo "--- Active Ports & Listening Services ---"
+            ss -tulpn 2>/dev/null | grep -E "80|443|3000|4321|8080|node|nginx" || true
+
+            echo "--- Active Docker Containers ---"
+            docker ps -a 2>/dev/null || true
+
+            echo "--- Active PM2 Processes ---"
+            pm2 list 2>/dev/null || true
+
+            echo "--- Nginx Sites Configuration ---"
+            grep -rh "proxy_pass\|root " /etc/nginx/sites-enabled/ 2>/dev/null || grep -rh "proxy_pass\|root " /etc/nginx/conf.d/ 2>/dev/null || true
 
             # 2. Locate the project directory on VPS
             APP_DIR=""
@@ -50,7 +58,7 @@ jobs:
             fi
 
             if [ -z "$APP_DIR" ] || [ ! -f "$APP_DIR/astro.config.mjs" ]; then
-              FOUND_DIR=$(find /root /home /var/www /var /srv /opt -maxdepth 4 -name "astro.config.mjs" 2>/dev/null | head -n 1 | xargs dirname || true)
+              FOUND_DIR=$(find /root /home /var/www /var /srv /opt /data -maxdepth 5 -name "astro.config.mjs" 2>/dev/null | head -n 1 | xargs dirname || true)
               if [ -n "$FOUND_DIR" ] && [ -d "$FOUND_DIR" ]; then
                 APP_DIR="$FOUND_DIR"
               fi
@@ -63,7 +71,7 @@ jobs:
             echo "🎯 Project directory detected: $APP_DIR"
             cd "$APP_DIR" || exit 1
 
-            echo "📥 Fetching and resetting to latest origin/main..."
+            echo "📥 Syncing latest code from GitHub main..."
             git remote set-url origin https://github.com/flexaidotlol/flexai.lol.git 2>/dev/null || true
             git fetch origin main
             git reset --hard origin/main
@@ -74,18 +82,25 @@ jobs:
             echo "🔨 Running production astro build..."
             npm run build
 
-            echo "🔄 Detecting Nginx proxy port..."
+            # 3. Handle Docker Containers if project is running via Docker
+            if [ -f "docker-compose.yml" ] || [ -f "compose.yml" ]; then
+              echo "🐳 Rebuilding Docker compose service..."
+              docker compose down 2>/dev/null || docker-compose down 2>/dev/null || true
+              docker compose up -d --build 2>/dev/null || docker-compose up -d --build 2>/dev/null || true
+            fi
+
+            # 4. Handle PM2 Service
             PROXY_PORT=$(grep -rohE "proxy_pass http://(127.0.0.1|localhost):[0-9]+" /etc/nginx/ 2>/dev/null | grep -oE "[0-9]+" | head -n 1 || echo "4321")
             echo "🎯 Target server port: $PROXY_PORT"
 
-            echo "🔄 Clean restarting PM2 on dist/server/entry.mjs..."
             if command -v pm2 &> /dev/null; then
+              echo "🔄 Restarting PM2 process..."
               pm2 delete all 2>/dev/null || true
               HOST=0.0.0.0 PORT=$PROXY_PORT pm2 start dist/server/entry.mjs --name flexai
               pm2 save --force
             fi
 
-            # Check and reload Nginx
+            # 5. Reload Nginx cache
             if command -v nginx &> /dev/null; then
               nginx -t 2>/dev/null && nginx -s reload 2>/dev/null || true
             fi
