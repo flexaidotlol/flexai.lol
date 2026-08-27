@@ -136,6 +136,18 @@ export const RealtimeLeaderboard: React.FC<RealtimeLeaderboardProps> = ({
     setActiveOutflexProduct(product);
   };
 
+  const handleScrollToHero = () => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+    setTimeout(() => {
+      const inputEl = document.getElementById('hero-url-input');
+      if (inputEl) {
+        inputEl.focus();
+        inputEl.classList.add('ring-4', 'ring-purple-500/50');
+        setTimeout(() => inputEl.classList.remove('ring-4', 'ring-purple-500/50'), 2500);
+      }
+    }, 450);
+  };
+
   return (
     <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
       {/* Outflex Modal */}
@@ -291,16 +303,24 @@ export const RealtimeLeaderboard: React.FC<RealtimeLeaderboardProps> = ({
               })}
             </div>
           ) : (
-            <div className="py-16 text-center">
-              <Sparkles className="w-8 h-8 text-purple-500 mx-auto mb-3 animate-pulse" />
-              <h3 className="text-base font-bold text-slate-900 dark:text-white">No products found</h3>
-              <p className="text-xs text-slate-500 dark:text-gray-400 mt-1">Be the first to claim #1 in this category!</p>
-              <a
-                href="/submit"
-                className="inline-block mt-4 px-5 py-2.5 rounded-xl text-xs font-semibold text-white bg-gradient-to-r from-purple-600 to-indigo-600 shadow-sm hover:from-purple-500 hover:to-indigo-500 transition-all"
-              >
-                List Your AI Now
-              </a>
+            <div className="py-14 px-6 text-center rounded-3xl bg-white dark:bg-dark-900 border border-dashed border-slate-300 dark:border-dark-border shadow-sm space-y-3 max-w-xl mx-auto my-4">
+              <div className="text-3xl animate-bounce">💀</div>
+              <h3 className="text-base sm:text-lg font-extrabold text-slate-900 dark:text-white">
+                Nobody has flexed here yet 💀
+              </h3>
+              <p className="text-xs sm:text-sm text-slate-600 dark:text-gray-400 max-w-md mx-auto leading-relaxed">
+                Ghost town detected. Steal the <strong className="text-amber-500 font-bold">#1 Crown</strong> for just <strong className="text-purple-600 dark:text-purple-400 font-bold">€2</strong> before your rivals find this spot.
+              </p>
+              <div className="pt-2">
+                <button
+                  type="button"
+                  onClick={handleScrollToHero}
+                  className="inline-flex items-center gap-2 px-6 py-2.5 rounded-xl text-xs sm:text-sm font-bold text-white bg-gradient-to-r from-purple-600 via-indigo-600 to-blue-600 shadow-md hover:shadow-glow-purple hover:scale-[1.02] active:scale-[0.98] transition-all cursor-pointer"
+                >
+                  <Sparkles className="w-4 h-4 stroke-[2.5]" />
+                  <span>Flex your AI</span>
+                </button>
+              </div>
             </div>
           )}
         </main>

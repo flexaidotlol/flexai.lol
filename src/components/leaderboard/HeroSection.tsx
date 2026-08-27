@@ -377,11 +377,12 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ categories, topProduct
               )}
             </div>
             <input
+              id="hero-url-input"
               type="text"
               value={inputValue}
               onChange={(e) => setInputValue(e.target.value)}
               placeholder="Your AI software URL or @handle..."
-              className="w-full bg-slate-50 dark:bg-dark-950/80 border border-slate-200 dark:border-dark-border rounded-xl pl-10 pr-3 py-2 text-xs sm:text-sm text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-gray-400 focus:outline-none focus:border-purple-500 transition-colors font-medium"
+              className="w-full bg-slate-50 dark:bg-dark-950/80 border border-slate-200 dark:border-dark-border rounded-xl pl-10 pr-3 py-2 text-xs sm:text-sm text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-gray-400 focus:outline-none focus:border-purple-500 transition-all font-medium"
             />
           </div>
 
