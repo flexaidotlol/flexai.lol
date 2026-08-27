@@ -25,7 +25,7 @@ export const GET: APIRoute = async () => {
     url: `${siteUrl}/categories/${cat.slug}`,
     changefreq: 'daily',
     priority: '0.8',
-    lastmod: cat.created_at ? new Date(cat.created_at).toISOString() : now,
+    lastmod: now,
   }));
 
   const productPages = products.map((prod) => ({
