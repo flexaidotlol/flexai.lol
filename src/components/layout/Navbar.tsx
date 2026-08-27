@@ -45,9 +45,11 @@ export const Navbar: React.FC<NavbarProps> = ({ currentPath = '/' }) => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
         {/* Left: Logo */}
         <div className="flex items-center gap-6">
-          <a href="/" className="flex items-center gap-1.5 select-none">
-            <span className="brand-wordmark text-xl sm:text-2xl text-slate-900 dark:text-white">
-              FLEXAI<span className="brand-lol">.lol</span>
+          <a href="/" className="flex items-center gap-1.5 select-none tracking-tight">
+            <span className="text-xl sm:text-2xl text-slate-900 dark:text-white">
+              <span className="font-light tracking-normal">Flex</span>
+              <span className="font-black">AI</span>
+              <span className="text-purple-600 dark:text-purple-400 font-black">.lol</span>
             </span>
           </a>
         </div>
