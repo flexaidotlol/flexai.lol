@@ -23,51 +23,58 @@ jobs:
           password: ${{ secrets.VPS_PASSWORD }}
           port: ${{ secrets.VPS_PORT || 22 }}
           script: |
-            set -e
             echo "========================================="
             echo "🚀 VPS DEPLOYMENT STARTED"
             echo "User: $(whoami)"
             echo "Host: $(hostname)"
             echo "========================================="
 
-            # 1. Inspect PM2 to find the running app's exact folder
+            # 1. Source full environment and paths
+            export NVM_DIR="$HOME/.nvm"
+            [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+            [ -s "$HOME/.profile" ] && \. "$HOME/.profile"
+            [ -s "$HOME/.bashrc" ] && \. "$HOME/.bashrc"
+            export PATH="/root/.nvm/versions/node/$(ls /root/.nvm/versions/node 2>/dev/null | tail -n 1)/bin:$HOME/.nvm/versions/node/$(ls $HOME/.nvm/versions/node 2>/dev/null | tail -n 1)/bin:/usr/local/bin:/usr/bin:/bin:/usr/local/sbin:/usr/sbin:/sbin:$PATH"
+
+            echo "Node: $(which node 2>/dev/null || echo 'not in standard PATH')"
+            echo "NPM: $(which npm 2>/dev/null || echo 'not in standard PATH')"
+            echo "PM2: $(which pm2 2>/dev/null || echo 'not in standard PATH')"
+
+            # 2. Locate the project directory on VPS
             APP_DIR=""
             if command -v pm2 &> /dev/null; then
-              echo "--- Current PM2 Processes ---"
-              pm2 list || true
               PM2_DIR=$(pm2 jlist 2>/dev/null | grep -o '"pm_cwd":"[^"]*' | head -n 1 | cut -d'"' -f4 || true)
               if [ -n "$PM2_DIR" ] && [ -d "$PM2_DIR" ]; then
                 APP_DIR="$PM2_DIR"
-                echo "🎯 Found active PM2 working directory: $APP_DIR"
               fi
             fi
 
-            # 2. Fallback search if PM2 didn't yield path
-            if [ -z "$APP_DIR" ] || [ ! -d "$APP_DIR" ]; then
-              APP_DIR=$(find /root /home /var /www /srv /opt -maxdepth 5 -name "astro.config.mjs" 2>/dev/null | head -n 1 | xargs dirname || true)
+            if [ -z "$APP_DIR" ] || [ ! -f "$APP_DIR/astro.config.mjs" ]; then
+              FOUND_DIR=$(find /root /home /var/www /var /srv /opt -maxdepth 4 -name "astro.config.mjs" 2>/dev/null | head -n 1 | xargs dirname || true)
+              if [ -n "$FOUND_DIR" ] && [ -d "$FOUND_DIR" ]; then
+                APP_DIR="$FOUND_DIR"
+              fi
             fi
 
-            if [ -z "$APP_DIR" ] || [ ! -d "$APP_DIR" ]; then
-              echo "⚠️ Could not auto-detect directory, using pwd: $(pwd)"
+            if [ -z "$APP_DIR" ]; then
               APP_DIR=$(pwd)
             fi
 
-            echo "📁 Entering project directory: $APP_DIR"
-            cd "$APP_DIR"
+            echo "🎯 Project directory detected: $APP_DIR"
+            cd "$APP_DIR" || exit 1
 
-            echo "📥 Syncing latest code from GitHub main..."
+            echo "📥 Fetching and resetting to latest origin/main..."
             git remote set-url origin https://github.com/flexaidotlol/flexai.lol.git 2>/dev/null || true
             git fetch origin main
             git reset --hard origin/main
 
-            echo "📦 Installing npm packages..."
-            export PATH=$PATH:/usr/local/bin:/usr/bin:~/.nvm/versions/node/$(ls ~/.nvm/versions/node 2>/dev/null | tail -n 1)/bin
+            echo "📦 Running npm install..."
             npm install
 
-            echo "🔨 Compiling production build..."
+            echo "🔨 Running production astro build..."
             npm run build
 
-            echo "🔄 Restarting web server..."
+            echo "🔄 Restarting application with PM2 / Systemd..."
             if command -v pm2 &> /dev/null; then
               pm2 reload all --update-env || pm2 restart all || pm2 start dist/server/entry.mjs --name flexai
               pm2 save
@@ -81,4 +88,4 @@ jobs:
               nginx -s reload 2>/dev/null || true
             fi
 
-            echo "🎉 SUCCESS: FlexAI deployed and live on VPS!"
+            echo "🎉 ALL DONE: Production site rebuilt and restarted on VPS!"
