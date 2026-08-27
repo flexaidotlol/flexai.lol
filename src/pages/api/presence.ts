@@ -11,22 +11,25 @@ const uniqueVisitorsSet = new Set<string>();
 let totalVisitorCounter = 0;
 
 export const GET: APIRoute = async ({ request, clientAddress }) => {
-  const ip = clientAddress || '127.0.0.1';
+  const forwarded = request.headers.get('x-forwarded-for');
+  const realIp = request.headers.get('x-real-ip');
+  const cfIp = request.headers.get('cf-connecting-ip');
+  const ip = (forwarded ? forwarded.split(',')[0].trim() : '') || realIp || cfIp || clientAddress || '127.0.0.1';
   const userAgent = request.headers.get('user-agent') || '';
-  const visitorHash = hashVisitor(ip, userAgent);
+  const visitorKey = hashVisitor(ip, userAgent);
   const now = Date.now();
 
   // Register session presence
-  activePresenceMap.set(visitorHash, now);
+  activePresenceMap.set(visitorKey, now);
 
-  // Track real unique visitor
-  if (!uniqueVisitorsSet.has(visitorHash)) {
-    uniqueVisitorsSet.add(visitorHash);
+  // Track unique visitor
+  if (!uniqueVisitorsSet.has(visitorKey)) {
+    uniqueVisitorsSet.add(visitorKey);
     totalVisitorCounter += 1;
   }
 
-  // Prune sessions older than 45 seconds
-  const cutoff = now - 45 * 1000;
+  // Prune sessions older than 40 seconds
+  const cutoff = now - 40 * 1000;
   for (const [id, lastSeen] of activePresenceMap.entries()) {
     if (lastSeen < cutoff) {
       activePresenceMap.delete(id);
@@ -52,5 +55,52 @@ export const GET: APIRoute = async ({ request, clientAddress }) => {
 };
 
 export const POST: APIRoute = async ({ request, clientAddress }) => {
-  return GET({ request, clientAddress } as any);
+  let bodySessionId = '';
+  try {
+    const body = await request.json();
+    bodySessionId = body.sessionId || '';
+  } catch {}
+
+  const forwarded = request.headers.get('x-forwarded-for');
+  const realIp = request.headers.get('x-real-ip');
+  const cfIp = request.headers.get('cf-connecting-ip');
+  const ip = (forwarded ? forwarded.split(',')[0].trim() : '') || realIp || cfIp || clientAddress || '127.0.0.1';
+  const userAgent = request.headers.get('user-agent') || '';
+
+  const visitorKey = bodySessionId ? `session:${bodySessionId}` : hashVisitor(ip, userAgent);
+  const now = Date.now();
+
+  // Register session presence
+  activePresenceMap.set(visitorKey, now);
+
+  // Track unique visitor
+  if (!uniqueVisitorsSet.has(visitorKey)) {
+    uniqueVisitorsSet.add(visitorKey);
+    totalVisitorCounter += 1;
+  }
+
+  // Prune sessions older than 40 seconds
+  const cutoff = now - 40 * 1000;
+  for (const [id, lastSeen] of activePresenceMap.entries()) {
+    if (lastSeen < cutoff) {
+      activePresenceMap.delete(id);
+    }
+  }
+
+  const onlineCount = Math.max(1, activePresenceMap.size);
+
+  return new Response(
+    JSON.stringify({
+      online_users: onlineCount,
+      total_visitors: totalVisitorCounter,
+      timestamp: now,
+    }),
+    {
+      status: 200,
+      headers: {
+        'Content-Type': 'application/json',
+        'Cache-Control': 'no-store, no-cache, must-revalidate',
+      },
+    }
+  );
 };

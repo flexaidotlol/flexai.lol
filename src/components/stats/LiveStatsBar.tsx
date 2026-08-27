@@ -20,10 +20,24 @@ export const LiveStatsBar: React.FC<LiveStatsBarProps> = ({ initialStats }) => {
 
   // Active Realtime User Presence Heartbeat & Stats Sync
   useEffect(() => {
+    // Generate or retrieve unique browser session ID
+    let sessionId = '';
+    try {
+      sessionId = sessionStorage.getItem('flexai_session_id') || '';
+      if (!sessionId) {
+        sessionId = 'sess_' + Math.random().toString(36).substring(2, 11) + Date.now().toString(36);
+        sessionStorage.setItem('flexai_session_id', sessionId);
+      }
+    } catch {}
+
     const sendHeartbeatAndSync = async () => {
       try {
         // 1. Send active presence ping
-        const presenceRes = await fetch('/api/presence', { method: 'POST' });
+        const presenceRes = await fetch('/api/presence', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ sessionId }),
+        });
         if (presenceRes.ok) {
           const presenceData = await presenceRes.json();
           setStats((prev) => ({
@@ -54,8 +68,8 @@ export const LiveStatsBar: React.FC<LiveStatsBarProps> = ({ initialStats }) => {
     // Initial heartbeat on mount
     sendHeartbeatAndSync();
 
-    // Heartbeat every 15 seconds to keep active session alive
-    const interval = setInterval(sendHeartbeatAndSync, 15000);
+    // Heartbeat every 8 seconds for responsive real-time counting
+    const interval = setInterval(sendHeartbeatAndSync, 8000);
 
     // Also trigger immediately when user switches back to tab
     const handleVisibility = () => {
