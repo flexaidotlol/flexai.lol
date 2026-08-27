@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from 'react';
-import { ArrowRight, Activity } from 'lucide-react';
 import type { LiveStats } from '../../types';
 import { formatNumber, centsToDollars } from '../../lib/utils/format';
 
