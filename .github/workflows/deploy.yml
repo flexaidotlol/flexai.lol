@@ -48,30 +48,39 @@ jobs:
             echo "--- Nginx Sites Configuration ---"
             grep -rh "proxy_pass\|root " /etc/nginx/sites-enabled/ 2>/dev/null || grep -rh "proxy_pass\|root " /etc/nginx/conf.d/ 2>/dev/null || true
 
-            # 2. Locate the project directory on VPS
-            APP_DIR=""
-            if command -v pm2 &> /dev/null; then
-              PM2_DIR=$(pm2 jlist 2>/dev/null | grep -o '"pm_cwd":"[^"]*' | head -n 1 | cut -d'"' -f4 || true)
-              if [ -n "$PM2_DIR" ] && [ -d "$PM2_DIR" ]; then
-                APP_DIR="$PM2_DIR"
+            # 2. Locate the EXACT FlexAI directory on VPS
+            APP_DIR="${{ secrets.VPS_APP_PATH }}"
+
+            # Try to get CWD of active process on port 4321
+            if [ -z "$APP_DIR" ]; then
+              NODE_PID=$(ss -tulpn | grep 4321 | grep -oE "pid=[0-9]+" | cut -d= -f2 | head -n 1 || true)
+              if [ -n "$NODE_PID" ] && [ -d "/proc/$NODE_PID/cwd" ]; then
+                PROC_DIR=$(readlink -f /proc/$NODE_PID/cwd 2>/dev/null || true)
+                if [ -n "$PROC_DIR" ] && [ -d "$PROC_DIR" ]; then
+                  APP_DIR="$PROC_DIR"
+                  echo "🎯 Found FlexAI from active process on port 4321: $APP_DIR"
+                fi
               fi
             fi
 
-            if [ -z "$APP_DIR" ] || [ ! -f "$APP_DIR/astro.config.mjs" ]; then
-              FOUND_DIR=$(find /root /home /var/www /var /srv /opt /data -maxdepth 5 -name "astro.config.mjs" 2>/dev/null | head -n 1 | xargs dirname || true)
-              if [ -n "$FOUND_DIR" ] && [ -d "$FOUND_DIR" ]; then
-                APP_DIR="$FOUND_DIR"
-              fi
+            # Fallback search specifically for flexai or FlexAI
+            if [ -z "$APP_DIR" ] || [ ! -d "$APP_DIR" ]; then
+              APP_DIR=$(find /root /home /var/www /var /srv /opt -maxdepth 4 -type d -iname "*flexai*" 2>/dev/null | head -n 1 || true)
+            fi
+
+            if [ -z "$APP_DIR" ] || [ ! -d "$APP_DIR" ]; then
+              APP_DIR=$(find /root /home /var/www /var /srv /opt -maxdepth 5 -name "astro.config.mjs" 2>/dev/null | grep -i "flex" | head -n 1 | xargs dirname || true)
             fi
 
             if [ -z "$APP_DIR" ]; then
-              APP_DIR=$(pwd)
+              echo "❌ Could not find FlexAI directory on VPS."
+              exit 1
             fi
 
-            echo "🎯 Project directory detected: $APP_DIR"
+            echo "🎯 FlexAI Directory: $APP_DIR"
             cd "$APP_DIR" || exit 1
 
-            echo "📥 Syncing latest code from GitHub main..."
+            echo "📥 Fetching and syncing latest code from GitHub main..."
             git remote set-url origin https://github.com/flexaidotlol/flexai.lol.git 2>/dev/null || true
             git fetch origin main
             git reset --hard origin/main
@@ -79,30 +88,29 @@ jobs:
             echo "📦 Running npm install..."
             npm install
 
-            echo "🔨 Running production astro build..."
+            echo "🔨 Running production build..."
             npm run build
 
-            # 3. Handle Docker Containers if project is running via Docker
-            if [ -f "docker-compose.yml" ] || [ -f "compose.yml" ]; then
-              echo "🐳 Rebuilding Docker compose service..."
-              docker compose down 2>/dev/null || docker-compose down 2>/dev/null || true
-              docker compose up -d --build 2>/dev/null || docker-compose up -d --build 2>/dev/null || true
+            # 3. Kill whatever process is currently occupying port 4321
+            echo "🔄 Freeing port 4321 and restarting PM2..."
+            fuser -k 4321/tcp 2>/dev/null || true
+            NODE_OLD_PID=$(ss -tulpn | grep 4321 | grep -oE "pid=[0-9]+" | cut -d= -f2 | head -n 1 || true)
+            if [ -n "$NODE_OLD_PID" ]; then
+              kill -9 "$NODE_OLD_PID" 2>/dev/null || true
             fi
 
-            # 4. Handle PM2 Service
-            PROXY_PORT=$(grep -rohE "proxy_pass http://(127.0.0.1|localhost):[0-9]+" /etc/nginx/ 2>/dev/null | grep -oE "[0-9]+" | head -n 1 || echo "4321")
-            echo "🎯 Target server port: $PROXY_PORT"
-
+            # 4. Start fresh PM2 service
             if command -v pm2 &> /dev/null; then
-              echo "🔄 Restarting PM2 process..."
-              pm2 delete all 2>/dev/null || true
-              HOST=0.0.0.0 PORT=$PROXY_PORT pm2 start dist/server/entry.mjs --name flexai
+              pm2 delete flexai 2>/dev/null || true
+              HOST=0.0.0.0 PORT=4321 pm2 start dist/server/entry.mjs --name flexai
               pm2 save --force
+            else
+              nohup node dist/server/entry.mjs > flexai.log 2>&1 &
             fi
 
-            # 5. Reload Nginx cache
+            # 5. Reload Nginx
             if command -v nginx &> /dev/null; then
               nginx -t 2>/dev/null && nginx -s reload 2>/dev/null || true
             fi
 
-            echo "🎉 ALL DONE: Production site rebuilt and restarted on VPS!"
+            echo "🎉 SUCCESS: FlexAI rebuilt and running on port 4321!"
