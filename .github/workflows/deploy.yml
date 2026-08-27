@@ -23,46 +23,62 @@ jobs:
           password: ${{ secrets.VPS_PASSWORD }}
           port: ${{ secrets.VPS_PORT || 22 }}
           script: |
-            echo "🚀 Starting deployment on VPS..."
-            
-            # Find and enter project directory
-            APP_DIR="${{ secrets.VPS_APP_PATH }}"
+            set -e
+            echo "========================================="
+            echo "🚀 VPS DEPLOYMENT STARTED"
+            echo "User: $(whoami)"
+            echo "Host: $(hostname)"
+            echo "========================================="
+
+            # 1. Inspect PM2 to find the running app's exact folder
+            APP_DIR=""
+            if command -v pm2 &> /dev/null; then
+              echo "--- Current PM2 Processes ---"
+              pm2 list || true
+              PM2_DIR=$(pm2 jlist 2>/dev/null | grep -o '"pm_cwd":"[^"]*' | head -n 1 | cut -d'"' -f4 || true)
+              if [ -n "$PM2_DIR" ] && [ -d "$PM2_DIR" ]; then
+                APP_DIR="$PM2_DIR"
+                echo "🎯 Found active PM2 working directory: $APP_DIR"
+              fi
+            fi
+
+            # 2. Fallback search if PM2 didn't yield path
             if [ -z "$APP_DIR" ] || [ ! -d "$APP_DIR" ]; then
-              APP_DIR=$(find /root /var/www /home /var -maxdepth 4 -name "astro.config.mjs" 2>/dev/null | head -n 1 | xargs dirname)
+              APP_DIR=$(find /root /home /var /www /srv /opt -maxdepth 5 -name "astro.config.mjs" 2>/dev/null | head -n 1 | xargs dirname || true)
             fi
 
             if [ -z "$APP_DIR" ] || [ ! -d "$APP_DIR" ]; then
+              echo "⚠️ Could not auto-detect directory, using pwd: $(pwd)"
               APP_DIR=$(pwd)
             fi
 
-            echo "📁 Target directory: $APP_DIR"
-            cd "$APP_DIR" || exit 1
+            echo "📁 Entering project directory: $APP_DIR"
+            cd "$APP_DIR"
 
-            echo "📥 Fetching and resetting to latest origin/main..."
+            echo "📥 Syncing latest code from GitHub main..."
             git remote set-url origin https://github.com/flexaidotlol/flexai.lol.git 2>/dev/null || true
             git fetch origin main
             git reset --hard origin/main
 
-            echo "📦 Installing npm dependencies..."
-            npm install --production=false
+            echo "📦 Installing npm packages..."
+            export PATH=$PATH:/usr/local/bin:/usr/bin:~/.nvm/versions/node/$(ls ~/.nvm/versions/node 2>/dev/null | tail -n 1)/bin
+            npm install
 
-            echo "🔨 Running production build..."
+            echo "🔨 Compiling production build..."
             npm run build
 
-            echo "🔄 Reloading PM2 and services..."
+            echo "🔄 Restarting web server..."
             if command -v pm2 &> /dev/null; then
               pm2 reload all --update-env || pm2 restart all || pm2 start dist/server/entry.mjs --name flexai
               pm2 save
             fi
 
-            # If systemd flexai service exists
             if systemctl is-active --quiet flexai 2>/dev/null; then
               systemctl restart flexai
             fi
 
-            # Clear any Nginx cache if exists
             if command -v nginx &> /dev/null; then
               nginx -s reload 2>/dev/null || true
             fi
 
-            echo "✅ Deployment completed successfully!"
+            echo "🎉 SUCCESS: FlexAI deployed and live on VPS!"
