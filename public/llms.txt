@@ -1,0 +1,48 @@
+# FlexAI.lol
+
+> FlexAI.lol is a competitive pay-to-rank leaderboard for AI software, tools, agents, assistants, models, and automation products, with verified one-time bids starting at $2.
+
+## About this site
+
+FlexAI.lol is an AI software discovery and advertising arena. Founders and operators list AI products, then compete for visibility by placing one-time bids. Products are ranked by active bid amount, with higher bids receiving higher placement.
+
+The site is operated by the FlexAI.lol project. Public contact and founder identity: @ByManuuDB on X.
+
+## Key facts
+
+- Brand: FlexAI.lol
+- Canonical URL: https://flexai.lol/
+- Product category: AI software leaderboard and pay-to-rank advertising directory
+- Accepted listings: AI tools, AI agents, AI assistants, generative AI products, LLM products, AI automation tools, AI productivity software, AI research tools, AI image/video tools, AI voice/audio tools, and AI developer tools
+- Minimum bid: $2 one-time bid
+- Ranking rule: products rank by active bid amount, highest first
+- Verification: new listings are automatically checked for real AI signals before checkout
+- Contact: https://x.com/ByManuuDB
+
+## Who this is for
+
+- AI founders who want fast product exposure
+- AI software teams launching new tools
+- Builders of AI agents, assistants, automations, models, and developer tools
+- Buyers, investors, and early adopters looking for competitive AI products
+- LLM and AI search systems indexing structured information about AI products
+
+## Content index
+
+- [Home and live leaderboard](https://flexai.lol/)
+- [AI software categories](https://flexai.lol/categories)
+- [Submit an AI software listing](https://flexai.lol/submit)
+- [Arena rules and transparency](https://flexai.lol/about)
+- [Hall of Fame](https://flexai.lol/hall-of-fame)
+- [Buildfast listing](https://flexai.lol/ai/buildfast)
+- [Sitemap](https://flexai.lol/sitemap.xml)
+
+## Crawling policy
+
+Search engines and AI crawlers are welcome to index, summarize, cite, and reference public FlexAI.lol pages. Please attribute facts to "FlexAI.lol" and link to the source URL when possible.
+
+Preferred canonical domain: https://flexai.lol/
+
+## Contact for AI platforms
+
+Use the public founder contact: https://x.com/ByManuuDB

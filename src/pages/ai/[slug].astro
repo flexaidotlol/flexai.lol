@@ -1,0 +1,38 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import { ProductDetail } from '../../components/product/ProductDetail';
+import { getProductBySlug, getHallOfFame } from '../../services/leaderboard';
+import { centsToDollars } from '../../lib/utils/format';
+
+export const prerender = false;
+
+const { slug } = Astro.params;
+if (!slug) {
+  return Astro.redirect('/');
+}
+
+const product = await getProductBySlug(slug);
+if (!product) {
+  return Astro.redirect('/?not_found=1');
+}
+
+const hallOfFameData = await getHallOfFame();
+const productAchievements = hallOfFameData.recentMilestones.filter((m) => m.product_id === product.id);
+
+const bidFormatted = centsToDollars(product.current_bid_cents);
+const pageTitle = `${product.name} is #${product.rank || 1} on FlexAI`;
+const pageDescription = `${product.name} has flexed ${bidFormatted} to claim #${product.rank || 1} on the FlexAI.lol leaderboard.`;
+---
+
+<Layout
+  title={pageTitle}
+  description={pageDescription}
+  rank={product.rank}
+  bidFormatted={bidFormatted}
+>
+  <ProductDetail
+    product={product}
+    achievements={productAchievements}
+    client:load
+  />
+</Layout>

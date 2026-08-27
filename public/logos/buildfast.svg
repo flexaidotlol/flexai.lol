@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="100%" height="100%">
+  <!-- Background with rounded corners for logo avatar usage -->
+  <rect width="512" height="512" rx="100" fill="#ffffff" />
+  
+  <g fill="#184ba0">
+    <!-- Top Right Corner Bracket -->
+    <path d="M 266 86 H 430 V 240 H 394 V 122 H 266 Z" />
+
+    <!-- Central Asterisk Bars -->
+    <!-- Vertical Bar -->
+    <rect x="218" y="131" width="36" height="290" />
+    
+    <!-- Horizontal Bar -->
+    <rect x="91" y="258" width="290" height="36" />
+    
+    <!-- Diagonal Bar (45 deg) -->
+    <rect x="218" y="131" width="36" height="290" transform="rotate(45 236 276)" />
+    
+    <!-- Diagonal Bar (-45 deg) -->
+    <rect x="218" y="131" width="36" height="290" transform="rotate(-45 236 276)" />
+  </g>
+</svg>

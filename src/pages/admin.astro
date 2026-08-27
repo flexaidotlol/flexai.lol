@@ -1,0 +1,16 @@
+---
+import Layout from '../layouts/Layout.astro';
+import { AdminPortal } from '../components/admin/AdminPortal';
+import { getAdminProducts } from '../services/leaderboard';
+
+export const prerender = false;
+
+const products = getAdminProducts();
+---
+
+<Layout
+  title="Admin Moderation Portal — FlexAI.lol"
+  description="Protected administration portal for moderating AI submissions and monitoring bid history."
+>
+  <AdminPortal products={products} client:load />
+</Layout>

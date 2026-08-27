@@ -1,0 +1,40 @@
+---
+import Layout from '../layouts/Layout.astro';
+import { LiveStatsBar } from '../components/stats/LiveStatsBar';
+import { HeroSection } from '../components/leaderboard/HeroSection';
+import { RealtimeLeaderboard } from '../components/leaderboard/RealtimeLeaderboard';
+import { getLeaderboard, getCategories, getLiveStats } from '../services/leaderboard';
+
+export const prerender = false;
+
+const categoryParam = Astro.url.searchParams.get('category') || 'all';
+
+const [products, categories, liveStats] = await Promise.all([
+  getLeaderboard('all'),
+  getCategories(),
+  getLiveStats(),
+]);
+
+const topProduct = products.length > 0 ? products[0] : undefined;
+---
+
+<Layout
+  title="FlexAI.lol — Competitive Pay-to-Rank Leaderboard for AI Products"
+  description="Founders submit their AI product, select a category, and pay a bid. Products are ranked primarily by the amount they have bid. Outbid others and claim #1."
+>
+  {/* 1. Live Stats Strip */}
+  <div class="pt-1">
+    <LiveStatsBar initialStats={liveStats} client:load />
+  </div>
+
+  {/* 2. Main Hero */}
+  <HeroSection categories={categories} topProduct={topProduct} allProducts={products} client:load />
+
+  {/* 3. Realtime Leaderboard + Category Navigation */}
+  <RealtimeLeaderboard
+    initialProducts={products}
+    categories={categories}
+    initialCategorySlug={categoryParam}
+    client:load
+  />
+</Layout>

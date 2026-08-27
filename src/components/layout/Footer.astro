@@ -1,0 +1,70 @@
+---
+const currentYear = new Date().getFullYear();
+---
+
+<footer class="border-t border-slate-200 dark:border-dark-border bg-white dark:bg-dark-950/90 mt-16 pt-12 pb-8 transition-colors">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-8 mb-10">
+      {/* Brand Column */}
+      <div class="space-y-3">
+        <a href="/" class="flex items-center gap-1.5">
+          <span class="text-xl font-extrabold tracking-tight text-slate-900 dark:text-white">
+            FLEXAI<span class="text-brand-purple">.lol</span>
+          </span>
+          <div class="w-1.5 h-1.5 rounded-full bg-brand-purple animate-pulse"></div>
+        </a>
+        <p class="text-xs text-slate-600 dark:text-gray-400 leading-relaxed">
+          The competitive pay-to-rank arena for AI founders. Outbid rivals, reach #1, and flex your tool to millions of monthly AI users.
+        </p>
+      </div>
+
+      {/* Navigation */}
+      <div>
+        <h4 class="text-xs font-bold uppercase tracking-wider text-slate-900 dark:text-gray-300 mb-3">Arena</h4>
+        <ul class="space-y-2 text-xs text-slate-600 dark:text-gray-400">
+          <li><a href="/" class="hover:text-purple-600 dark:hover:text-white transition-colors">Global Leaderboard</a></li>
+          <li><a href="/categories" class="hover:text-purple-600 dark:hover:text-white transition-colors">Browse 12 Categories</a></li>
+          <li><a href="/submit" class="hover:text-purple-600 dark:hover:text-white transition-colors">List & Flex Your AI</a></li>
+          <li><a href="/dashboard" class="hover:text-purple-600 dark:hover:text-white transition-colors">Founder Dashboard</a></li>
+        </ul>
+      </div>
+
+      {/* Mechanics & Trust */}
+      <div>
+        <h4 class="text-xs font-bold uppercase tracking-wider text-slate-900 dark:text-gray-300 mb-3">Transparency</h4>
+        <ul class="space-y-2 text-xs text-slate-600 dark:text-gray-400">
+          <li><a href="/about" class="hover:text-purple-600 dark:hover:text-white transition-colors">Ranking Mechanics</a></li>
+          <li><a href="/about#faq" class="hover:text-purple-600 dark:hover:text-white transition-colors">Rules & Anti-Spam</a></li>
+          <li><a href="/about#stripe" class="hover:text-purple-600 dark:hover:text-white transition-colors">Stripe Verified Bids</a></li>
+          <li><a href="/about" class="hover:text-purple-600 dark:hover:text-white transition-colors">Terms of Service</a></li>
+        </ul>
+      </div>
+
+      {/* Live Badge */}
+      <div class="space-y-3">
+        <h4 class="text-xs font-bold uppercase tracking-wider text-slate-900 dark:text-gray-300 mb-3">Security & Trust</h4>
+        <div class="p-3.5 rounded-2xl bg-slate-50 dark:bg-dark-900 border border-slate-200 dark:border-dark-border space-y-2 text-[11px] text-slate-600 dark:text-gray-400">
+          <div class="flex items-center gap-1.5 text-emerald-600 dark:text-emerald-400 font-semibold">
+            <div class="w-2 h-2 rounded-full bg-emerald-500 animate-ping"></div>
+            <span>PostgreSQL Atomic Sorting</span>
+          </div>
+          <p>Every ranking position is verified cryptographically via Stripe webhooks with zero floating-point math.</p>
+        </div>
+      </div>
+    </div>
+
+    {/* Bottom Bar */}
+    <div class="pt-6 border-t border-slate-200 dark:border-dark-border/60 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-slate-500 dark:text-gray-500">
+      <div>
+        © {currentYear} FlexAI.lol — Created by <a href="https://x.com/ByManuuDB" target="_blank" rel="noopener noreferrer" class="text-purple-600 dark:text-purple-400 hover:underline font-semibold">@ByManuuDB</a>.
+      </div>
+      <div class="flex items-center gap-4">
+        <a href="https://x.com/ByManuuDB" target="_blank" rel="noopener noreferrer" class="hover:text-purple-600 dark:hover:text-purple-400 transition-colors">Follow on X</a>
+        <span>•</span>
+        <a href="/about" class="hover:text-slate-700 dark:hover:text-gray-400 transition-colors">Terms of Bidding</a>
+        <span>•</span>
+        <a href="/about" class="hover:text-slate-700 dark:hover:text-gray-400 transition-colors">Privacy & Cookies</a>
+      </div>
+    </div>
+  </div>
+</footer>

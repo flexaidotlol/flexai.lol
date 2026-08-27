@@ -1,0 +1,32 @@
+---
+import Layout from '../layouts/Layout.astro';
+import { SubmitWizard } from '../components/submission/SubmitWizard';
+import { getCategories } from '../services/leaderboard';
+
+export const prerender = false;
+
+const categories = await getCategories();
+
+const urlParams = Astro.url.searchParams;
+const initialName = urlParams.get('name') || '';
+const initialUrl = urlParams.get('url') || '';
+const initialCategory = urlParams.get('category') || '';
+const initialBidStr = urlParams.get('bid');
+const initialBid = initialBidStr ? parseInt(initialBidStr, 10) : undefined;
+---
+
+<Layout
+  title="List Your AI Product — FlexAI.lol"
+  description="Submit your AI product, select your niche category, choose your bid amount, and climb the live competitive arena."
+>
+  <div class="py-8">
+    <SubmitWizard
+      categories={categories}
+      initialName={initialName}
+      initialUrl={initialUrl}
+      initialCategory={initialCategory}
+      initialBid={initialBid}
+      client:load
+    />
+  </div>
+</Layout>

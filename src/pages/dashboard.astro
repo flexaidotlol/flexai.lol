@@ -1,0 +1,19 @@
+---
+import Layout from '../layouts/Layout.astro';
+import { FounderDashboard } from '../components/dashboard/FounderDashboard';
+import { getLeaderboard, getCategories } from '../services/leaderboard';
+import { getBidHistory } from '../services/bids';
+
+export const prerender = false;
+
+const products = await getLeaderboard('all');
+const bids = await getBidHistory();
+const categories = await getCategories();
+---
+
+<Layout
+  title="Founder Dashboard — FlexAI.lol"
+  description="Manage your active AI product rankings, outbid competitors, track outbound clicks, and view verified payment receipts."
+>
+  <FounderDashboard products={products} bids={bids} categories={categories} client:load />
+</Layout>

@@ -1,0 +1,37 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import { SuccessCelebration } from '../../components/bidding/SuccessCelebration';
+import { getCategories, getProductBySlug } from '../../services/leaderboard';
+import { getProductByBidId } from '../../services/bids';
+
+export const prerender = false;
+
+const sessionId = Astro.url.searchParams.get('session_id') || undefined;
+const bidId = Astro.url.searchParams.get('bid_id') || undefined;
+const productParam = Astro.url.searchParams.get('product') || Astro.url.searchParams.get('product_id') || undefined;
+const isSimulated = Astro.url.searchParams.get('simulated') === 'true';
+
+const categories = await getCategories();
+
+let product = null;
+if (bidId) {
+  product = await getProductByBidId(bidId);
+}
+if (!product && productParam) {
+  product = await getProductBySlug(productParam);
+}
+---
+
+<Layout
+  title="Bid Confirmed! Configure Your AI Listing — FlexAI.lol"
+  description="Your competitive bid was verified. Customize your logo, name, tagline, description, and website URL live on FlexAI."
+>
+  <SuccessCelebration
+    sessionId={sessionId}
+    bidId={bidId}
+    initialProduct={product}
+    categories={categories}
+    isSimulated={isSimulated}
+    client:load
+  />
+</Layout>

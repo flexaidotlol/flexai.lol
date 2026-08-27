@@ -1,0 +1,63 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import { getCategories, getLeaderboard } from '../../services/leaderboard';
+import { centsToDollars, formatCompactDollars } from '../../lib/utils/format';
+import { LayoutGrid, Sparkles, ArrowRight, Bot, Cpu, Image, Code, Megaphone, Mic, Zap, BookOpen, RefreshCw, Briefcase, GraduationCap, Smile } from 'lucide-react';
+
+export const prerender = false;
+
+const [categories, allProducts] = await Promise.all([
+  getCategories(),
+  getLeaderboard('all'),
+]);
+---
+
+<Layout
+  title="Browse AI Categories — FlexAI.lol"
+  description="Explore competitive AI leaderboards across 12 specialized niches from AI Assistants to Developer Agents."
+>
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 space-y-10">
+    <div class="text-center max-w-2xl mx-auto space-y-3">
+      <h1 class="text-3xl sm:text-4xl font-bold text-slate-900 dark:text-white">Browse AI Categories</h1>
+      <p class="text-sm text-slate-600 dark:text-gray-400">Discover and compete within 12 high-intent AI product categories.</p>
+    </div>
+
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+      {categories.map((cat) => {
+        const catProducts = allProducts.filter((p) => p.category_id === cat.id || p.category?.slug === cat.slug);
+        const topProduct = catProducts[0];
+
+        return (
+          <a
+            href={`/?category=${cat.slug}`}
+            class="group rounded-2xl bg-white dark:bg-dark-900 border border-slate-200 dark:border-dark-border hover:border-purple-500/50 p-6 space-y-4 transition-all hover:scale-[1.02] shadow-sm flex flex-col justify-between"
+          >
+            <div>
+              <div class="flex items-center justify-between mb-3">
+                <span class="text-xs font-mono text-purple-600 dark:text-purple-400 font-bold">
+                  {formatCompactDollars(cat.total_bid_cents || 0)} staked
+                </span>
+                <span class="text-xs text-slate-500 dark:text-gray-400">{catProducts.length} AI tools</span>
+              </div>
+
+              <h3 class="text-xl font-bold text-slate-900 dark:text-white group-hover:text-purple-600 dark:group-hover:text-purple-300 transition-colors">
+                {cat.name}
+              </h3>
+              <p class="text-xs text-slate-600 dark:text-gray-400 mt-1 leading-relaxed">{cat.description}</p>
+            </div>
+
+            {topProduct && (
+              <div class="pt-4 border-t border-slate-200 dark:border-dark-border flex items-center justify-between">
+                <div class="flex items-center gap-2">
+                  <span class="text-xs text-slate-500 dark:text-gray-400">#1:</span>
+                  <span class="text-xs font-bold text-slate-900 dark:text-white">{topProduct.name}</span>
+                </div>
+                <span class="text-xs font-mono text-emerald-600 dark:text-emerald-400 font-bold">{centsToDollars(topProduct.current_bid_cents)}</span>
+              </div>
+            )}
+          </a>
+        );
+      })}
+    </div>
+  </div>
+</Layout>

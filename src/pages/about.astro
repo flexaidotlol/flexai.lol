@@ -1,0 +1,96 @@
+---
+import Layout from '../layouts/Layout.astro';
+import { ShieldCheck, Zap, DollarSign, Award, CheckCircle2, Crown, HelpCircle, Sparkles, Flame, Rocket } from 'lucide-react';
+---
+
+<Layout
+  title="About & Arena Rules — FlexAI.lol"
+  description="Transparent pay-to-rank mechanics, atomic PostgreSQL leaderboard ordering, and FAQ for FlexAI.lol."
+>
+  <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-10 space-y-10">
+    {/* Heading with founder humor */}
+    <div class="text-center space-y-3">
+      <div class="inline-flex items-center gap-1.5 px-3.5 py-1 rounded-full bg-purple-500/10 text-purple-600 dark:text-purple-300 text-xs font-bold uppercase tracking-wider border border-purple-500/20">
+        <Sparkles className="w-3.5 h-3.5" />
+        <span>100% Pay-to-Win • Zero VC Gatekeeping</span>
+      </div>
+      <h1 class="text-3xl sm:text-4xl md:text-5xl font-bold text-slate-900 dark:text-white tracking-tight leading-tight">
+        Where your credit card speaks louder than your pitch deck.
+      </h1>
+      <p class="text-base sm:text-lg text-slate-600 dark:text-gray-300 max-w-2xl mx-auto font-normal">
+        Skip the 6-month SEO waiting games, cringe LinkedIn growth hacks, and the Google Ads money furnace. Just outbid everyone and take #1.
+      </p>
+    </div>
+
+    {/* 3 Core Rules with Witty Humor */}
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+      <div class="rounded-3xl bg-white dark:bg-dark-900 border border-slate-200 dark:border-dark-border p-6 space-y-3 shadow-sm">
+        <div class="w-10 h-10 rounded-2xl bg-purple-100 dark:bg-purple-500/20 text-purple-600 dark:text-purple-400 flex items-center justify-center font-bold text-sm">
+          01
+        </div>
+        <h3 class="text-lg font-bold text-slate-900 dark:text-white">Pure Financial Dominance</h3>
+        <p class="text-xs text-slate-600 dark:text-gray-400 leading-relaxed">
+          No committee reviews, no mysterious algorithms. If your bid is $1 higher than the leader, you take the crown in milliseconds. Democracy is nice, but capitalism is instant.
+        </p>
+      </div>
+
+      <div class="rounded-3xl bg-white dark:bg-dark-900 border border-slate-200 dark:border-dark-border p-6 space-y-3 shadow-sm">
+        <div class="w-10 h-10 rounded-2xl bg-indigo-100 dark:bg-indigo-500/20 text-indigo-600 dark:text-indigo-400 flex items-center justify-center font-bold text-sm">
+          02
+        </div>
+        <h3 class="text-lg font-bold text-slate-900 dark:text-white">Zero Subscription Traps</h3>
+        <p class="text-xs text-slate-600 dark:text-gray-400 leading-relaxed">
+          We don't charge you $99/month hoping you forget to cancel. You pay a one-time bid. Your spot is yours until an ambitious rival founder decides to outflex you.
+        </p>
+      </div>
+
+      <div class="rounded-3xl bg-white dark:bg-dark-900 border border-slate-200 dark:border-dark-border p-6 space-y-3 shadow-sm">
+        <div class="w-10 h-10 rounded-2xl bg-emerald-100 dark:bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 flex items-center justify-center font-bold text-sm">
+          03
+        </div>
+        <h3 class="text-lg font-bold text-slate-900 dark:text-white">Unfiltered Dofollow Signals</h3>
+        <p class="text-xs text-slate-600 dark:text-gray-400 leading-relaxed">
+          Real builders and investors look at top spots. Get verified click attribution and high-authority DOFOLLOW backlink juice while your competitors post "Building in public" threads.
+        </p>
+      </div>
+    </div>
+
+    {/* Detailed FAQ & Rules */}
+    <div class="rounded-3xl bg-white dark:bg-dark-900 border border-slate-200 dark:border-dark-border p-6 sm:p-8 space-y-6 shadow-sm">
+      <h2 class="text-2xl font-bold text-slate-900 dark:text-white flex items-center gap-2">
+        <HelpCircle className="w-5 h-5 text-purple-600 dark:text-purple-400" />
+        <span>Rules & Transparency</span>
+      </h2>
+
+      <div class="space-y-4 text-sm divide-y divide-slate-100 dark:divide-dark-border">
+        <div class="pt-4 first:pt-0 space-y-1.5">
+          <h4 class="font-bold text-slate-900 dark:text-white">How ranking works</h4>
+          <p class="text-slate-600 dark:text-gray-400">
+            Bids are in whole US dollars. Paying less than #1 still puts you on the board at whatever rank that bid can take. To raise an existing listing, submit an outbid for the difference.
+          </p>
+        </div>
+
+        <div class="pt-4 space-y-1.5">
+          <h4 class="font-bold text-slate-900 dark:text-white">What you can list</h4>
+          <p class="text-slate-600 dark:text-gray-400">
+            A real product website or an X @handle. Chat and invite links are not allowed (Telegram, WhatsApp, Discord, Signal, etc.). Query parameters and affiliate tracking codes are stripped automatically.
+          </p>
+        </div>
+
+        <div class="pt-4 space-y-1.5">
+          <h4 class="font-bold text-slate-900 dark:text-white">After you pay</h4>
+          <p class="text-slate-600 dark:text-gray-400">
+            Your listing is immediately public. Outbound traffic routes directly to your product URL. A completed Stripe payment is what cryptographically claims the rank.
+          </p>
+        </div>
+
+        <div class="pt-4 space-y-1.5">
+          <h4 class="font-bold text-slate-900 dark:text-white">Payment & Chargebacks Policy</h4>
+          <p class="text-slate-600 dark:text-gray-400">
+            By completing this purchase, you confirm that you have reviewed the product and pricing and authorize the payment. If you have any issue with your purchase, please contact <a href="https://x.com/ByManuuDB" target="_blank" rel="noopener noreferrer" class="text-purple-600 dark:text-purple-400 font-semibold hover:underline">@ByManuuDB on X</a> before initiating a payment dispute or chargeback.
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</Layout>
