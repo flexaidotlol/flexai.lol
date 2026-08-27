@@ -60,9 +60,12 @@ jobs:
             echo "📁 Entering project directory: $APP_DIR"
             cd "$APP_DIR" || exit 1
 
-            # Backup existing .env if present
+            # Backup existing .env and persistent data if present
             if [ -f "$APP_DIR/.env" ]; then
               cp "$APP_DIR/.env" /tmp/flexai.env.bak
+            fi
+            if [ -d "$APP_DIR/data" ]; then
+              cp -r "$APP_DIR/data" /tmp/flexai_data_bak
             fi
 
             echo "📥 Syncing latest code from GitHub main..."
@@ -70,6 +73,11 @@ jobs:
             git fetch --all --prune
             git reset --hard origin/main
             git clean -fd
+
+            # Restore persistent data directory
+            if [ -d /tmp/flexai_data_bak ]; then
+              cp -r /tmp/flexai_data_bak "$APP_DIR/data"
+            fi
 
             echo "🔍 VPS Live Git Commit: $(git log -1 --oneline)"
 

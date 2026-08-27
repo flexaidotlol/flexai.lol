@@ -1,4 +1,5 @@
 import type { Product, Category, Achievement, ProductAchievement, RankHistory, Bid, LiveStats, ActivityEvent } from '../../types';
+import { getVisitorStats } from './visitor-store';
 
 export const INITIAL_CATEGORIES: Category[] = [
   { id: 'c1', slug: 'ai-assistants', name: 'AI Assistants', description: 'Conversational AI, chat assistants, and general reasoning tools', icon: 'Bot', sort_order: 1, is_active: true, total_bid_cents: 0, product_count: 0 },
@@ -148,10 +149,11 @@ class MemoryStore {
     const totalBids = activeProds.reduce((sum, p) => sum + p.current_bid_cents, 0);
     const sorted = [...activeProds].sort((a, b) => b.current_bid_cents - a.current_bid_cents);
     const num1 = sorted[0];
+    const vStats = getVisitorStats();
 
     return {
-      online_users: 1,
-      total_visitors: 1,
+      online_users: vStats.online_users,
+      total_visitors: vStats.total_visitors,
       total_bids_cents: totalBids,
       total_products: activeProds.length,
       number_one_price_cents: num1 ? num1.current_bid_cents : 200,
