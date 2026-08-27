@@ -508,12 +508,14 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ categories, topProduct
 
             {aiCheck.status === 'failed' && (
               <p className="text-[11px] text-slate-600 dark:text-gray-400 mt-0.5">
-                Is your product built with AI? Contact{' '}
+                Is your product built with AI? DM{' '}
                 <a
-                  href="mailto:flexai.lol@gmail.com?subject=Manual%20AI%20Domain%20Verification%20Request"
+                  href="https://x.com/ByManuuDB"
+                  target="_blank"
+                  rel="noopener noreferrer"
                   className="font-bold text-purple-600 dark:text-purple-400 hover:underline inline-flex items-center gap-0.5"
                 >
-                  flexai.lol@gmail.com
+                  @ByManuuDB on X
                 </a>{' '}
                 for instant manual approval.
               </p>
