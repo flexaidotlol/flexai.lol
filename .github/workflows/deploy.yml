@@ -81,29 +81,7 @@ jobs:
             NODE_BIN=$(which node || echo "/usr/bin/node")
             echo "Node binary located at: $NODE_BIN"
 
-            cat << 'EOF' > /etc/systemd/system/flexai.service
-[Unit]
-Description=FlexAI Astro Production Server
-After=network.target
-
-[Service]
-Type=simple
-User=root
-WorkingDirectory=/var/www/flexai.lol
-Environment=NODE_ENV=production
-Environment=HOST=127.0.0.1
-Environment=PORT=4321
-ExecStart=/usr/bin/node /var/www/flexai.lol/dist/server/entry.mjs
-Restart=always
-RestartSec=2
-StandardOutput=journal
-StandardError=journal
-
-[Install]
-WantedBy=multi-user.target
-EOF
-
-            sed -i "s|/usr/bin/node|$NODE_BIN|g" /etc/systemd/system/flexai.service
+            printf "[Unit]\nDescription=FlexAI Astro Production Server\nAfter=network.target\n\n[Service]\nType=simple\nUser=root\nWorkingDirectory=/var/www/flexai.lol\nEnvironment=NODE_ENV=production\nEnvironment=HOST=127.0.0.1\nEnvironment=PORT=4321\nExecStart=%s /var/www/flexai.lol/dist/server/entry.mjs\nRestart=always\nRestartSec=2\nStandardOutput=journal\nStandardError=journal\n\n[Install]\nWantedBy=multi-user.target\n" "$NODE_BIN" > /etc/systemd/system/flexai.service
 
             # Clean any old processes and restart systemd service
             fuser -k 4321/tcp 2>/dev/null || true
