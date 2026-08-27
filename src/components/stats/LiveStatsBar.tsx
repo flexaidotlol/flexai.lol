@@ -67,8 +67,8 @@ export const LiveStatsBar: React.FC<LiveStatsBarProps> = ({ initialStats }) => {
     // Initial heartbeat on mount
     sendHeartbeatAndSync();
 
-    // Heartbeat every 8 seconds for responsive real-time counting
-    const interval = setInterval(sendHeartbeatAndSync, 8000);
+    // Heartbeat every 4 seconds for responsive real-time counting
+    const interval = setInterval(sendHeartbeatAndSync, 4000);
 
     // Also trigger immediately when user switches back to tab
     const handleVisibility = () => {
