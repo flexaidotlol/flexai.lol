@@ -62,8 +62,14 @@ jobs:
 
             echo "📥 Syncing latest code from GitHub main..."
             git remote set-url origin https://github.com/flexaidotlol/flexai.lol.git 2>/dev/null || true
-            git fetch origin main
+            git fetch --all --prune
             git reset --hard origin/main
+            git clean -fd
+
+            echo "🔍 VPS Live Git Commit: $(git log -1 --oneline)"
+
+            echo "🧹 Cleaning previous build cache..."
+            rm -rf dist .astro node_modules/.astro
 
             echo "📦 Running npm install..."
             npm install
@@ -77,7 +83,7 @@ jobs:
               pm2 kill 2>/dev/null || true
             fi
             fuser -k 4321/tcp 2>/dev/null || true
-            sleep 1
+            sleep 2
 
             if command -v pm2 &> /dev/null; then
               HOST=0.0.0.0 PORT=4321 pm2 start dist/server/entry.mjs --name flexai --update-env
@@ -86,13 +92,16 @@ jobs:
               HOST=0.0.0.0 PORT=4321 nohup node dist/server/entry.mjs > flexai.log 2>&1 &
             fi
 
-            sleep 2
+            sleep 3
             echo "✅ Health check for port 4321:"
             curl -sI "http://127.0.0.1:4321" | head -n 5 || true
 
+            echo "🔍 Verifying Live HTML output on port 4321:"
+            curl -s "http://127.0.0.1:4321" | grep -o 'Claim.*' | head -n 2 || true
+
             # 3. Reload Nginx
             if command -v nginx &> /dev/null; then
-              nginx -t 2>/dev/null && nginx -s reload 2>/dev/null || true
+              nginx -t 2>/dev/null && (systemctl restart nginx 2>/dev/null || nginx -s reload 2>/dev/null || true)
             fi
 
             echo "🎉 SUCCESS: FlexAI rebuilt and running live on port 4321!"
