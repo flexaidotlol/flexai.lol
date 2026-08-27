@@ -303,10 +303,37 @@ export const RealtimeLeaderboard: React.FC<RealtimeLeaderboardProps> = ({
               })}
             </div>
           ) : (
-            <div className="py-14 px-6 text-center rounded-3xl bg-white dark:bg-dark-900 border border-dashed border-slate-300 dark:border-dark-border shadow-sm space-y-3 max-w-xl mx-auto my-4">
-              <div className="text-3xl animate-bounce">💀</div>
+            <div className="py-12 px-6 text-center rounded-3xl bg-white dark:bg-dark-900 border border-dashed border-slate-300 dark:border-dark-border shadow-sm space-y-3 max-w-xl mx-auto my-4">
+              <div className="flex justify-center items-center">
+                <div className="w-16 h-16 rounded-2xl bg-slate-100 dark:bg-dark-800 border border-slate-200 dark:border-dark-border/80 flex items-center justify-center text-slate-700 dark:text-gray-300 shadow-inner">
+                  <svg
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="1.8"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    className="w-10 h-10"
+                  >
+                    {/* Antenna with bulb */}
+                    <circle cx="12" cy="2.5" r="1" fill="currentColor" stroke="none" />
+                    <path d="M12 3.5v3" />
+                    {/* Side Ears */}
+                    <path d="M4.5 12h-2m2 0a2.5 2.5 0 0 0 0-5v5m0 0a2.5 2.5 0 0 1 0 5v-5" />
+                    <path d="M19.5 12h2m-2 0a2.5 2.5 0 0 0 0-5v5m0 0a2.5 2.5 0 0 1 0 5v-5" />
+                    {/* Head Outline */}
+                    <rect x="4.5" y="6.5" width="15" height="14" rx="3.5" />
+                    {/* Left Eye: X */}
+                    <path d="M8 10.5l2.5 2.5m0-2.5L8 13" />
+                    {/* Right Eye: O */}
+                    <circle cx="15.25" cy="11.75" r="1.5" />
+                    {/* Squiggly mouth */}
+                    <path d="M8 17l1.7-1 1.7 1 1.7-1 1.7 1" />
+                  </svg>
+                </div>
+              </div>
               <h3 className="text-base sm:text-lg font-extrabold text-slate-900 dark:text-white">
-                Nobody has flexed here yet 💀
+                Nobody has flexed here yet
               </h3>
               <p className="text-xs sm:text-sm text-slate-600 dark:text-gray-400 max-w-md mx-auto leading-relaxed">
                 Ghost town detected. Steal the <strong className="text-amber-500 font-bold">#1 Crown</strong> for just <strong className="text-purple-600 dark:text-purple-400 font-bold">€2</strong> before your rivals find this spot.
