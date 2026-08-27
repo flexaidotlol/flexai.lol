@@ -1,0 +1,67 @@
+name: Deploy to VPS
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    name: Deploy to Live Server
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Deploy to VPS via SSH
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.VPS_HOST || '77.42.124.150' }}
+          username: ${{ secrets.VPS_USERNAME || 'root' }}
+          key: ${{ secrets.VPS_SSH_KEY }}
+          password: ${{ secrets.VPS_PASSWORD }}
+          port: ${{ secrets.VPS_PORT || 22 }}
+          script: |
+            echo "🚀 Starting deployment on VPS..."
+            
+            # Find and enter project directory
+            APP_DIR="${{ secrets.VPS_APP_PATH }}"
+            if [ -z "$APP_DIR" ]; then
+              if [ -d "/var/www/flexai" ]; then
+                APP_DIR="/var/www/flexai"
+              elif [ -d "/var/www/flexai.lol" ]; then
+                APP_DIR="/var/www/flexai.lol"
+              elif [ -d "$HOME/FlexAI" ]; then
+                APP_DIR="$HOME/FlexAI"
+              elif [ -d "$HOME/flexai.lol" ]; then
+                APP_DIR="$HOME/flexai.lol"
+              else
+                APP_DIR="/root/FlexAI"
+              fi
+            fi
+
+            echo "📁 Entering directory: $APP_DIR"
+            cd "$APP_DIR" || exit 1
+
+            echo "📥 Pulling latest changes from GitHub..."
+            git reset --hard HEAD
+            git pull origin main
+
+            echo "📦 Installing dependencies..."
+            npm install --production=false
+
+            echo "🔨 Building Astro application..."
+            npm run build
+
+            echo "🔄 Restarting application service..."
+            if command -v pm2 &> /dev/null; then
+              pm2 restart flexai || pm2 restart all || pm2 start dist/server/entry.mjs --name flexai
+              pm2 save
+            elif systemctl is-active --quiet flexai; then
+              systemctl restart flexai
+            else
+              echo "⚠️ PM2/Systemd service check completed."
+            fi
+
+            echo "✅ Deployment completed successfully!"
