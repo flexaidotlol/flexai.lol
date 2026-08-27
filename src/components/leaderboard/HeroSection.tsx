@@ -522,26 +522,20 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ categories, topProduct
         )}
 
         {/* Trust mechanic badges - Compact */}
-        <div className="pt-1 flex items-center justify-center flex-wrap gap-4 sm:gap-6 text-xs text-slate-500 dark:text-gray-400">
-          <div className="flex items-center gap-1">
-            <div className="w-3.5 h-3.5 rounded-full bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 flex items-center justify-center">
-              <Check className="w-2.5 h-2.5 stroke-[3]" />
-            </div>
-            <span>Instant leaderboard update</span>
+        <div className="pt-1 flex items-center justify-center flex-wrap gap-4 sm:gap-6 text-xs text-slate-500 dark:text-gray-400 font-medium">
+          <div className="flex items-center gap-1.5">
+            <span>⚡</span>
+            <span>Instant ego boost</span>
           </div>
 
-          <div className="flex items-center gap-1">
-            <div className="w-3.5 h-3.5 rounded-full bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 flex items-center justify-center">
-              <Check className="w-2.5 h-2.5 stroke-[3]" />
-            </div>
-            <span>One-time bids</span>
+          <div className="flex items-center gap-1.5">
+            <span>💰</span>
+            <span>One-time flex (no VC needed)</span>
           </div>
 
-          <div className="flex items-center gap-1">
-            <div className="w-3.5 h-3.5 rounded-full bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 flex items-center justify-center">
-              <Check className="w-2.5 h-2.5 stroke-[3]" />
-            </div>
-            <span>No monthly fees</span>
+          <div className="flex items-center gap-1.5">
+            <span>🚫</span>
+            <span>0% monthly recurring BS</span>
           </div>
         </div>
       </div>
