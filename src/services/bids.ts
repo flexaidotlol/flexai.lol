@@ -63,6 +63,37 @@ export async function createProductSubmission(payload: z.infer<typeof submitProd
       .eq('website_url', urlCheck.normalizedUrl)
       .maybeSingle();
 
+    // Resolve category slug or name to Supabase UUID
+    let resolvedCategoryId: string | null = null;
+    const isUUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(payload.category_id);
+    if (isUUID) {
+      resolvedCategoryId = payload.category_id;
+    } else if (payload.category_id) {
+      const { data: cat } = await supabaseServer
+        .from('categories')
+        .select('id')
+        .eq('slug', payload.category_id)
+        .maybeSingle();
+
+      if (cat?.id) {
+        resolvedCategoryId = cat.id;
+      } else {
+        const newCatSlug = slugify(payload.category_id) || 'custom';
+        const { data: createdCat } = await supabaseServer
+          .from('categories')
+          .insert({
+            name: payload.category_id,
+            slug: newCatSlug,
+            icon: 'Sparkles',
+            sort_order: 99,
+          })
+          .select('id')
+          .maybeSingle();
+
+        resolvedCategoryId = createdCat?.id || null;
+      }
+    }
+
     if (existingProd) {
       product = existingProd as Product;
     } else {
@@ -75,7 +106,7 @@ export async function createProductSubmission(payload: z.infer<typeof submitProd
           tagline: payload.tagline,
           description: payload.description || '',
           website_url: urlCheck.normalizedUrl,
-          category_id: payload.category_id,
+          category_id: resolvedCategoryId,
           logo_url: payload.logo_url || null,
           x_handle: payload.x_handle || null,
           status: 'pending',

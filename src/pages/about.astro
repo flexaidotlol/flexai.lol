@@ -1,96 +1,112 @@
 ---
 import Layout from '../layouts/Layout.astro';
-import { ShieldCheck, Zap, DollarSign, Award, CheckCircle2, Crown, HelpCircle, Sparkles, Flame, Rocket } from 'lucide-react';
 ---
 
 <Layout
-  title="About & Arena Rules — FlexAI.lol"
-  description="Transparent pay-to-rank mechanics, atomic PostgreSQL leaderboard ordering, and FAQ for FlexAI.lol."
+  title="Rules & Terms — FlexAI.lol"
+  description="FlexAI is a public pay-to-rank leaderboard for AI software, products, and founders. Rank is what you pay — nothing else."
 >
-  <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-10 space-y-10">
-    {/* Heading with founder humor */}
-    <div class="text-center space-y-3">
-      <div class="inline-flex items-center gap-1.5 px-3.5 py-1 rounded-full bg-purple-500/10 text-purple-600 dark:text-purple-300 text-xs font-bold uppercase tracking-wider border border-purple-500/20">
-        <Sparkles className="w-3.5 h-3.5" />
-        <span>100% Pay-to-Win • Zero VC Gatekeeping</span>
-      </div>
-      <h1 class="text-3xl sm:text-4xl md:text-5xl font-bold text-slate-900 dark:text-white tracking-tight leading-tight">
-        Where your credit card speaks louder than your pitch deck.
-      </h1>
-      <p class="text-base sm:text-lg text-slate-600 dark:text-gray-300 max-w-2xl mx-auto font-normal">
-        Skip the 6-month SEO waiting games, cringe LinkedIn growth hacks, and the Google Ads money furnace. Just outbid everyone and take #1.
-      </p>
-    </div>
-
-    {/* 3 Core Rules with Witty Humor */}
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-      <div class="rounded-3xl bg-white dark:bg-dark-900 border border-slate-200 dark:border-dark-border p-6 space-y-3 shadow-sm">
-        <div class="w-10 h-10 rounded-2xl bg-purple-100 dark:bg-purple-500/20 text-purple-600 dark:text-purple-400 flex items-center justify-center font-bold text-sm">
-          01
-        </div>
-        <h3 class="text-lg font-bold text-slate-900 dark:text-white">Pure Financial Dominance</h3>
-        <p class="text-xs text-slate-600 dark:text-gray-400 leading-relaxed">
-          No committee reviews, no mysterious algorithms. If your bid is $1 higher than the leader, you take the crown in milliseconds. Democracy is nice, but capitalism is instant.
+  <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-16">
+    <div class="space-y-10 text-slate-700 dark:text-gray-300 text-sm sm:text-base leading-relaxed">
+      
+      {/* Title */}
+      <div class="space-y-4">
+        <h1 class="text-3xl sm:text-4xl font-extrabold text-slate-900 dark:text-white tracking-tight">
+          Rules
+        </h1>
+        <p class="text-base sm:text-lg text-slate-600 dark:text-gray-300 leading-relaxed font-normal">
+          FlexAI is a public pay-to-rank leaderboard for AI software, tools, and founders. There are no ads, no API keys, and no revenue share. You pay to stand above everyone else. Rank is what you pay — nothing else.
         </p>
       </div>
 
-      <div class="rounded-3xl bg-white dark:bg-dark-900 border border-slate-200 dark:border-dark-border p-6 space-y-3 shadow-sm">
-        <div class="w-10 h-10 rounded-2xl bg-indigo-100 dark:bg-indigo-500/20 text-indigo-600 dark:text-indigo-400 flex items-center justify-center font-bold text-sm">
-          02
-        </div>
-        <h3 class="text-lg font-bold text-slate-900 dark:text-white">Zero Subscription Traps</h3>
-        <p class="text-xs text-slate-600 dark:text-gray-400 leading-relaxed">
-          We don't charge you $99/month hoping you forget to cancel. You pay a one-time bid. Your spot is yours until an ambitious rival founder decides to outflex you.
+      {/* How ranking works */}
+      <section id="rules" class="space-y-3 pt-4 border-t border-slate-200 dark:border-dark-border/60">
+        <h2 class="text-xl sm:text-2xl font-bold text-slate-900 dark:text-white tracking-tight">
+          How ranking works
+        </h2>
+        <ul class="list-disc pl-5 space-y-2.5 text-slate-600 dark:text-gray-300">
+          <li>
+            New listings are in whole Euros (€), €2 minimum, €999,999 maximum, €1 at a time. Ranks already on the board keep their amount until they raise or get outranked.
+          </li>
+          <li>
+            Taking #1 costs at least the current #1 amount + €1 (or matches their required outbid). Paying less still puts you on the board at whatever rank that amount can take. Equal amounts stay in the order they were placed — the older listing keeps the higher rank.
+          </li>
+          <li>
+            Already on the list? Enter the same URL or @handle again and raise your rank. The new amount must be at least €1 above your current staked bid; checkout only charges the difference. Someone else cannot take your rank by paying that difference.
+          </li>
+          <li>
+            App Store, Play Store, GitHub, and similar platform links are keyed by their unique project path, so different apps don't share a rank. Tracking query strings are ignored.
+          </li>
+        </ul>
+      </section>
+
+      {/* What you can list */}
+      <section class="space-y-3 pt-4 border-t border-slate-200 dark:border-dark-border/60">
+        <h2 class="text-xl sm:text-2xl font-bold text-slate-900 dark:text-white tracking-tight">
+          What you can list
+        </h2>
+        <ul class="list-disc pl-5 space-y-2.5 text-slate-600 dark:text-gray-300">
+          <li>
+            An AI product website, startup landing page, or an X @handle.
+          </li>
+          <li>
+            Chat and invite links are not allowed — Telegram, WhatsApp, Discord, Messenger, Signal, and similar. The board is for AI software and verified profiles, not group chats.
+          </li>
+          <li>
+            Links to sexual content or non-software scam networks are strictly prohibited. If it is adult/NSFW or malicious, it does not belong on the board and will be removed immediately.
+          </li>
+          <li>
+            Query parameters are stripped from listing links. Affiliate, referral, and tracking URLs will not work.
+          </li>
+          <li>
+            Link shortener URLs (e.g. bit.ly, tinyurl, t.co) are not allowed. If you submit one, it is replaced by the URL it redirects to.
+          </li>
+        </ul>
+      </section>
+
+      {/* AI Verification & Categories */}
+      <section class="space-y-3 pt-4 border-t border-slate-200 dark:border-dark-border/60">
+        <h2 class="text-xl sm:text-2xl font-bold text-slate-900 dark:text-white tracking-tight">
+          AI Verification & Categories
+        </h2>
+        <ul class="list-disc pl-5 space-y-2.5 text-slate-600 dark:text-gray-300">
+          <li>
+            All submitted URLs are analyzed automatically by real-time scrapers to verify authentic AI software signals before checkout.
+          </li>
+          <li>
+            Categories for existing listings were auto-assigned by AI. If your product is in the wrong category or was rejected by automated signals, contact <a href="mailto:flexai.lol@gmail.com" class="text-purple-600 dark:text-purple-400 font-semibold hover:underline">flexai.lol@gmail.com</a> or DM <a href="https://x.com/ByManuuDB" target="_blank" rel="noopener noreferrer" class="text-purple-600 dark:text-purple-400 font-semibold hover:underline">@ByManuuDB</a> on X to have it updated.
+          </li>
+        </ul>
+      </section>
+
+      {/* After you pay */}
+      <section id="terms" class="space-y-3 pt-4 border-t border-slate-200 dark:border-dark-border/60">
+        <h2 class="text-xl sm:text-2xl font-bold text-slate-900 dark:text-white tracking-tight">
+          After you pay
+        </h2>
+        <ul class="list-disc pl-5 space-y-2.5 text-slate-600 dark:text-gray-300">
+          <li>
+            Your listing is public immediately upon Stripe confirmation. Clicks go to the URL or profile you submitted, without query parameters.
+          </li>
+          <li>
+            A completed payment is what claims the rank. All payments are final and non-refundable.
+          </li>
+          <li>
+            Paying means you agree to these Rules, our Terms of Service, and Privacy Policy.
+          </li>
+        </ul>
+      </section>
+
+      {/* Payment & Chargebacks Policy */}
+      <section id="privacy" class="space-y-3 pt-4 border-t border-slate-200 dark:border-dark-border/60">
+        <h2 class="text-xl sm:text-2xl font-bold text-slate-900 dark:text-white tracking-tight">
+          Payment & Chargebacks Policy
+        </h2>
+        <p class="text-slate-600 dark:text-gray-300 leading-relaxed">
+          By completing this purchase, you confirm that you have reviewed the product and pricing and authorize the payment. If you have any issue with your purchase, please contact <a href="https://x.com/ByManuuDB" target="_blank" rel="noopener noreferrer" class="text-purple-600 dark:text-purple-400 font-semibold hover:underline">@ByManuuDB on X</a> or email <a href="mailto:flexai.lol@gmail.com" class="text-purple-600 dark:text-purple-400 font-semibold hover:underline">flexai.lol@gmail.com</a> before initiating a payment dispute or chargeback.
         </p>
-      </div>
+      </section>
 
-      <div class="rounded-3xl bg-white dark:bg-dark-900 border border-slate-200 dark:border-dark-border p-6 space-y-3 shadow-sm">
-        <div class="w-10 h-10 rounded-2xl bg-emerald-100 dark:bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 flex items-center justify-center font-bold text-sm">
-          03
-        </div>
-        <h3 class="text-lg font-bold text-slate-900 dark:text-white">Unfiltered Dofollow Signals</h3>
-        <p class="text-xs text-slate-600 dark:text-gray-400 leading-relaxed">
-          Real builders and investors look at top spots. Get verified click attribution and high-authority DOFOLLOW backlink juice while your competitors post "Building in public" threads.
-        </p>
-      </div>
-    </div>
-
-    {/* Detailed FAQ & Rules */}
-    <div class="rounded-3xl bg-white dark:bg-dark-900 border border-slate-200 dark:border-dark-border p-6 sm:p-8 space-y-6 shadow-sm">
-      <h2 class="text-2xl font-bold text-slate-900 dark:text-white flex items-center gap-2">
-        <HelpCircle className="w-5 h-5 text-purple-600 dark:text-purple-400" />
-        <span>Rules & Transparency</span>
-      </h2>
-
-      <div class="space-y-4 text-sm divide-y divide-slate-100 dark:divide-dark-border">
-        <div class="pt-4 first:pt-0 space-y-1.5">
-          <h4 class="font-bold text-slate-900 dark:text-white">How ranking works</h4>
-          <p class="text-slate-600 dark:text-gray-400">
-            Bids are in whole US dollars. Paying less than #1 still puts you on the board at whatever rank that bid can take. To raise an existing listing, submit an outbid for the difference.
-          </p>
-        </div>
-
-        <div class="pt-4 space-y-1.5">
-          <h4 class="font-bold text-slate-900 dark:text-white">What you can list</h4>
-          <p class="text-slate-600 dark:text-gray-400">
-            A real product website or an X @handle. Chat and invite links are not allowed (Telegram, WhatsApp, Discord, Signal, etc.). Query parameters and affiliate tracking codes are stripped automatically.
-          </p>
-        </div>
-
-        <div class="pt-4 space-y-1.5">
-          <h4 class="font-bold text-slate-900 dark:text-white">After you pay</h4>
-          <p class="text-slate-600 dark:text-gray-400">
-            Your listing is immediately public. Outbound traffic routes directly to your product URL. A completed Stripe payment is what cryptographically claims the rank.
-          </p>
-        </div>
-
-        <div class="pt-4 space-y-1.5">
-          <h4 class="font-bold text-slate-900 dark:text-white">Payment & Chargebacks Policy</h4>
-          <p class="text-slate-600 dark:text-gray-400">
-            By completing this purchase, you confirm that you have reviewed the product and pricing and authorize the payment. If you have any issue with your purchase, please contact <a href="https://x.com/ByManuuDB" target="_blank" rel="noopener noreferrer" class="text-purple-600 dark:text-purple-400 font-semibold hover:underline">@ByManuuDB on X</a> before initiating a payment dispute or chargeback.
-          </p>
-        </div>
-      </div>
     </div>
   </div>
 </Layout>
