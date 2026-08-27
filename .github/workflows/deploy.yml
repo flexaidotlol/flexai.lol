@@ -77,36 +77,39 @@ jobs:
             echo "🔨 Running production astro build..."
             npm run build
 
-            # 2. Configure indestructible systemd service for FlexAI
-            NODE_BIN=$(which node)
-            echo "Using Node Binary: $NODE_BIN"
+            # 2. Setup PM2 managed by Systemd
+            echo "🔄 Configuring PM2 with Systemd daemon..."
+            ln -sf "$(which node)" /usr/local/bin/node 2>/dev/null || true
+            ln -sf "$(which npm)" /usr/local/bin/npm 2>/dev/null || true
+            ln -sf "$(which pm2)" /usr/local/bin/pm2 2>/dev/null || true
 
-            printf "[Unit]\nDescription=FlexAI Astro Production Server\nAfter=network.target\n\n[Service]\nType=simple\nUser=root\nWorkingDirectory=/var/www/flexai.lol\nEnvironment=NODE_ENV=production\nEnvironment=HOST=127.0.0.1\nEnvironment=PORT=4321\nExecStart=%s /var/www/flexai.lol/dist/server/entry.mjs\nRestart=always\nRestartSec=2\n\n[Install]\nWantedBy=multi-user.target\n" "$NODE_BIN" > /etc/systemd/system/flexai.service
-
-            # Clean any old PM2 or rogue processes on port 4321
+            # Clean any old processes on port 4321
             fuser -k 4321/tcp 2>/dev/null || true
-            if command -v pm2 &> /dev/null; then
-              pm2 delete all 2>/dev/null || true
-              pm2 kill 2>/dev/null || true
-            fi
+            systemctl stop flexai 2>/dev/null || true
+            systemctl disable flexai 2>/dev/null || true
+            rm -f /etc/systemd/system/flexai.service 2>/dev/null || true
+            systemctl daemon-reload 2>/dev/null || true
             sleep 1
 
-            # Start systemd service
-            systemctl daemon-reload
-            systemctl enable flexai
-            systemctl restart flexai
+            if command -v pm2 &> /dev/null; then
+              pm2 delete flexai 2>/dev/null || true
+              pm2 delete all 2>/dev/null || true
+              HOST=127.0.0.1 PORT=4321 pm2 start dist/server/entry.mjs --name flexai --update-env
+              pm2 save --force
+              env PATH=$PATH:/usr/local/bin:/usr/bin pm2 startup systemd -u root --hp /root 2>/dev/null || pm2 startup 2>/dev/null || true
+              pm2 save --force
+            else
+              HOST=127.0.0.1 PORT=4321 nohup node dist/server/entry.mjs > /var/log/flexai.log 2>&1 &
+            fi
+
             sleep 2
-
-            echo "✅ Service Status:"
-            systemctl status flexai --no-pager -l || true
-
-            echo "✅ Port 4321 Response:"
+            echo "✅ Port 4321 Status:"
             curl -sI "http://127.0.0.1:4321" | head -n 10 || true
 
-            # If still failing, dump logs
+            # Check logs if not 200
             if ! curl -s -o /dev/null -w "%{http_code}" "http://127.0.0.1:4321" | grep -q "200\|301\|302"; then
-              echo "❌ ERROR LOGS FROM JOURNALCTL:"
-              journalctl -u flexai -n 30 --no-pager || true
+              echo "❌ PM2 Logs:"
+              pm2 logs flexai --lines 30 --nostream 2>/dev/null || cat /var/log/flexai.log 2>/dev/null || true
             fi
 
             # 3. Reload Nginx
@@ -114,4 +117,4 @@ jobs:
               nginx -t 2>/dev/null && (systemctl reload nginx 2>/dev/null || systemctl restart nginx 2>/dev/null || nginx -s reload 2>/dev/null || true)
             fi
 
-            echo "🎉 SUCCESS: FlexAI running permanently via systemd on port 4321!"
+            echo "🎉 SUCCESS: FlexAI permanently active and managed by PM2 Systemd on port 4321!"
