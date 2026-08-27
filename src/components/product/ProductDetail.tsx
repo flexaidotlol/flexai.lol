@@ -67,30 +67,24 @@ export const ProductDetail: React.FC<ProductDetailProps> = ({ product, achieveme
           {/* Logo + Details */}
           <div className="flex items-start sm:items-center gap-5">
             {/* Rank badge circle */}
-            <div className="shrink-0 relative">
+            <div className="shrink-0 relative flex items-center justify-center w-12 sm:w-14">
               {product.rank === 1 ? (
-                <div
-                  className="w-14 h-14 rounded-2xl bg-gradient-to-tr from-amber-500 via-amber-400 to-yellow-300 flex items-center justify-center shadow-[0_0_20px_rgba(245,158,11,0.6)]"
+                <Crown
+                  className="w-10 h-10 sm:w-12 sm:h-12 text-amber-500 fill-amber-400/25 stroke-[2] drop-shadow-[0_0_12px_rgba(245,158,11,0.8)]"
                   title="Rank #1 Champion (Gold Crown)"
-                >
-                  <Crown className="w-8 h-8 text-dark-950 fill-dark-950" />
-                </div>
+                />
               ) : product.rank === 2 ? (
-                <div
-                  className="w-14 h-14 rounded-2xl bg-gradient-to-tr from-slate-400 via-slate-200 to-slate-100 flex items-center justify-center shadow-[0_0_15px_rgba(148,163,184,0.4)]"
+                <Crown
+                  className="w-9 h-9 sm:w-11 sm:h-11 text-slate-400 dark:text-slate-300 fill-slate-300/20 stroke-[2] drop-shadow-[0_0_10px_rgba(148,163,184,0.6)]"
                   title="Rank #2 (Silver Crown)"
-                >
-                  <Crown className="w-7 h-7 text-slate-900 fill-slate-900" />
-                </div>
+                />
               ) : product.rank === 3 ? (
-                <div
-                  className="w-14 h-14 rounded-2xl bg-gradient-to-tr from-amber-800 via-amber-600 to-orange-400 flex items-center justify-center shadow-[0_0_12px_rgba(194,65,12,0.35)]"
+                <Crown
+                  className="w-9 h-9 sm:w-11 sm:h-11 text-amber-700 dark:text-amber-500 fill-amber-600/20 stroke-[2] drop-shadow-[0_0_10px_rgba(194,65,12,0.5)]"
                   title="Rank #3 (Bronze Crown)"
-                >
-                  <Crown className="w-7 h-7 text-white fill-white" />
-                </div>
+                />
               ) : (
-                <div className="w-14 h-14 rounded-2xl bg-slate-100 dark:bg-dark-800 border border-slate-200 dark:border-dark-border text-slate-900 dark:text-white font-black text-xl flex items-center justify-center">
+                <div className="w-12 h-12 rounded-2xl bg-slate-100 dark:bg-dark-800 border border-slate-200 dark:border-dark-border text-slate-900 dark:text-white font-black text-xl flex items-center justify-center">
                   #{product.rank || 1}
                 </div>
               )}

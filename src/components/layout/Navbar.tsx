@@ -7,12 +7,12 @@ interface NavbarProps {
 
 export const Navbar: React.FC<NavbarProps> = ({ currentPath = '/' }) => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const [isDark, setIsDark] = useState(true);
+  const [isDark, setIsDark] = useState(false);
 
-  // Initialize theme from document or localStorage
+  // Initialize theme from document or localStorage (default light mode)
   useEffect(() => {
     const savedTheme = localStorage.getItem('theme');
-    const initialDark = savedTheme ? savedTheme === 'dark' : true; // default dark premium
+    const initialDark = savedTheme ? savedTheme === 'dark' : false; // default light mode
 
     setIsDark(initialDark);
     if (initialDark) {

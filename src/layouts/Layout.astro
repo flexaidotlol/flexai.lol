@@ -29,21 +29,21 @@ const dynamicTitle = rank && bidFormatted
 ---
 
 <!doctype html>
-<html lang="en" class="dark">
+<html lang="en">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <link rel="canonical" href={canonicalUrl} />
 
-    {/* Inline script to prevent theme flash */}
+    {/* Inline script to default to light mode unless dark is explicitly saved */}
     <script is:inline>
       try {
         const theme = localStorage.getItem('theme');
-        if (theme === 'light') {
-          document.documentElement.classList.remove('dark');
-        } else {
+        if (theme === 'dark') {
           document.documentElement.classList.add('dark');
+        } else {
+          document.documentElement.classList.remove('dark');
         }
       } catch (e) {}
     </script>

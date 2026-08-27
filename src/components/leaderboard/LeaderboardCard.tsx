@@ -38,33 +38,27 @@ export const LeaderboardCard: React.FC<LeaderboardCardProps> = ({ product, rank,
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         {/* Left Section: Rank + Logo + Details */}
         <div className="flex items-start sm:items-center gap-3 sm:gap-4 flex-1 min-w-0">
-          {/* Rank Badge: Crowns for Top 3 (No numbers), Normal Numbers for Rank 4+ */}
-          <div className="relative shrink-0 flex items-center justify-center">
+          {/* Rank: Pure Stroke Crowns for Top 3 (No boxes, no numbers), Clean Numbers for Rank 4+ */}
+          <div className="shrink-0 flex items-center justify-center w-9 sm:w-10">
             {isTop1 ? (
-              <div
-                className="w-11 h-11 rounded-2xl bg-gradient-to-tr from-amber-500 via-amber-400 to-yellow-300 flex items-center justify-center shadow-[0_0_16px_rgba(245,158,11,0.6)]"
+              <Crown
+                className="w-8 h-8 sm:w-9 sm:h-9 text-amber-500 fill-amber-400/25 stroke-[2] drop-shadow-[0_0_10px_rgba(245,158,11,0.75)] animate-pulse"
                 title="Rank #1 Champion (Gold Crown)"
-              >
-                <Crown className="w-6 h-6 text-dark-950 fill-dark-950 drop-shadow-xs" />
-              </div>
+              />
             ) : isTop2 ? (
-              <div
-                className="w-11 h-11 rounded-2xl bg-gradient-to-tr from-slate-400 via-slate-200 to-slate-100 flex items-center justify-center shadow-[0_0_12px_rgba(148,163,184,0.4)]"
+              <Crown
+                className="w-7 h-7 sm:w-8 sm:h-8 text-slate-400 dark:text-slate-300 fill-slate-300/20 stroke-[2] drop-shadow-[0_0_8px_rgba(148,163,184,0.6)]"
                 title="Rank #2 (Silver Crown)"
-              >
-                <Crown className="w-5 h-5 text-slate-900 fill-slate-900" />
-              </div>
+              />
             ) : isTop3 ? (
-              <div
-                className="w-11 h-11 rounded-2xl bg-gradient-to-tr from-amber-800 via-amber-600 to-orange-400 flex items-center justify-center shadow-[0_0_10px_rgba(194,65,12,0.35)]"
+              <Crown
+                className="w-7 h-7 sm:w-8 sm:h-8 text-amber-700 dark:text-amber-500 fill-amber-600/20 stroke-[2] drop-shadow-[0_0_8px_rgba(194,65,12,0.5)]"
                 title="Rank #3 (Bronze Crown)"
-              >
-                <Crown className="w-5 h-5 text-white fill-white" />
-              </div>
+              />
             ) : (
-              <div className="w-10 h-10 rounded-xl bg-slate-100 dark:bg-dark-800 border border-slate-200 dark:border-dark-border text-slate-600 dark:text-gray-400 font-bold text-xs flex items-center justify-center">
+              <span className="text-slate-400 dark:text-gray-500 font-bold text-sm sm:text-base">
                 #{rank}
-              </div>
+              </span>
             )}
           </div>
 

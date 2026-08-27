@@ -266,9 +266,9 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ categories, topProduct
               <Minus className="w-4 h-4 stroke-[3]" />
             </button>
 
-            {/* Seamless Inline Price - Looks like text, fully editable */}
+            {/* Seamless Inline Price - Pure text look without bars or browser arrows */}
             <div className="inline-flex items-center relative px-0.5 group">
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-600 via-indigo-600 to-blue-600 dark:from-purple-400 dark:via-indigo-300 dark:to-blue-400 font-extrabold tracking-tight drop-shadow-[0_0_20px_rgba(139,92,246,0.4)] text-3xl sm:text-4xl md:text-5xl font-mono">
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-600 via-indigo-600 to-blue-600 dark:from-purple-400 dark:via-indigo-300 dark:to-blue-400 font-extrabold tracking-tight text-3xl sm:text-4xl md:text-5xl font-mono">
                 €
               </span>
               <input
@@ -277,8 +277,8 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ categories, topProduct
                 step="1"
                 value={userBidDollars}
                 onChange={handlePriceChange}
-                style={{ width: `${Math.max(1, String(userBidDollars).length) * 1.5 + 0.5}ch` }}
-                className="text-transparent bg-clip-text bg-gradient-to-r from-purple-600 via-indigo-600 to-blue-600 dark:from-purple-400 dark:via-indigo-300 dark:to-blue-400 font-extrabold tracking-tight drop-shadow-[0_0_20px_rgba(139,92,246,0.4)] text-3xl sm:text-4xl md:text-5xl font-mono text-center bg-transparent border-b-2 border-dashed border-purple-400/40 hover:border-purple-500 focus:border-purple-500 outline-none p-0 cursor-pointer transition-colors"
+                style={{ width: `${Math.max(1, String(userBidDollars).length) * 1.5 + 0.2}ch` }}
+                className="text-transparent bg-clip-text bg-gradient-to-r from-purple-600 via-indigo-600 to-blue-600 dark:from-purple-400 dark:via-indigo-300 dark:to-blue-400 font-extrabold tracking-tight text-3xl sm:text-4xl md:text-5xl font-mono text-center bg-transparent border-none outline-none p-0 cursor-pointer [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none focus:outline-none focus:ring-0 select-all"
               />
             </div>
 
