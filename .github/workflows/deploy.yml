@@ -46,7 +46,7 @@ jobs:
             pm2 list 2>/dev/null || true
 
             echo "--- Nginx Sites Configuration ---"
-            grep -rh "proxy_pass\|root " /etc/nginx/sites-enabled/ 2>/dev/null || grep -rh "proxy_pass\|root " /etc/nginx/conf.d/ 2>/dev/null || true
+            cat /etc/nginx/sites-enabled/* 2>/dev/null || cat /etc/nginx/conf.d/* 2>/dev/null || true
 
             # 1. Target exact FlexAI directory (/var/www/flexai.lol)
             APP_DIR="/var/www/flexai.lol"
@@ -102,15 +102,20 @@ jobs:
             echo "✅ Port 4321 Response:"
             curl -sI "http://127.0.0.1:4321" | head -n 10 || true
 
-            # Check journalctl if not responding
-            if ! curl -s -o /dev/null -w "%{http_code}" "http://127.0.0.1:4321" | grep -q "200\|301\|302"; then
-              echo "❌ Journalctl logs:"
-              journalctl -u flexai -n 30 --no-pager || true
+            echo "📁 Checking dist client static assets:"
+            ls -la /var/www/flexai.lol/dist/client/_astro/ 2>/dev/null || true
+
+            CSS_FILE=$(ls /var/www/flexai.lol/dist/client/_astro/*.css 2>/dev/null | head -n 1 | xargs -n 1 basename 2>/dev/null || true)
+            if [ -n "$CSS_FILE" ]; then
+              echo "🎨 Testing CSS delivery from Node server: /_astro/$CSS_FILE"
+              curl -sI "http://127.0.0.1:4321/_astro/$CSS_FILE" | head -n 5 || true
             fi
 
             # 3. Reload Nginx
             if command -v nginx &> /dev/null; then
-              nginx -t 2>/dev/null && (systemctl reload nginx 2>/dev/null || systemctl restart nginx 2>/dev/null || nginx -s reload 2>/dev/null || true)
+              echo "🔄 Checking Nginx Configuration:"
+              nginx -t || true
+              systemctl reload nginx 2>/dev/null || systemctl restart nginx 2>/dev/null || nginx -s reload 2>/dev/null || true
             fi
 
             echo "🎉 SUCCESS: FlexAI running permanently via Systemd on port 4321!"
