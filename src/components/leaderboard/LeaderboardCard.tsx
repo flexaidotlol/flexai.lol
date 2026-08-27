@@ -1,5 +1,5 @@
-import React from 'react';
-import { Crown, CheckCircle2, TrendingUp, TrendingDown, ExternalLink, ArrowUpRight, Sparkles } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { Crown, CheckCircle2, TrendingUp, TrendingDown, ExternalLink } from 'lucide-react';
 import type { Product } from '../../types';
 import { centsToDollars, formatCompactNumber, formatRelativeTime, formatDomain } from '../../lib/utils/format';
 
@@ -9,15 +9,24 @@ interface LeaderboardCardProps {
   onOutflexClick?: (product: Product) => void;
 }
 
-export const LeaderboardCard: React.FC<LeaderboardCardProps> = ({ product, rank, onOutflexClick }) => {
+export const LeaderboardCard: React.FC<LeaderboardCardProps> = ({ product, rank }) => {
   const isTop1 = rank === 1;
   const isTop2 = rank === 2;
   const isTop3 = rank === 3;
 
+  const [clicks, setClicks] = useState<number>(product.total_clicks || 0);
+
+  useEffect(() => {
+    setClicks(product.total_clicks || 0);
+  }, [product.total_clicks]);
+
+  const handleOutboundClick = () => {
+    setClicks((c) => c + 1);
+  };
+
   const currentBidFormatted = centsToDollars(product.current_bid_cents);
   const domain = formatDomain(product.website_url);
   const relativeTime = formatRelativeTime(product.updated_at || product.created_at);
-  const clickCount = formatCompactNumber(product.total_clicks);
 
   // Bid movement
   const bidChange = product.bid_change_cents || 0;
@@ -108,13 +117,16 @@ export const LeaderboardCard: React.FC<LeaderboardCardProps> = ({ product, rank,
                 href={`/go/${product.slug}`}
                 target="_blank"
                 rel="noopener noreferrer"
+                onClick={handleOutboundClick}
                 className="text-slate-600 dark:text-gray-300 hover:text-purple-600 dark:hover:text-purple-300 transition-colors flex items-center gap-1 hover:underline font-medium"
               >
                 <span>{domain}</span>
                 <ExternalLink className="w-3 h-3" />
               </a>
 
-              <span className="font-semibold text-slate-700 dark:text-gray-300">{clickCount} clicks</span>
+              <span className="font-semibold text-slate-700 dark:text-gray-300">
+                {formatCompactNumber(clicks)} {clicks === 1 ? 'click' : 'clicks'}
+              </span>
 
               <a
                 href={`/ai/${product.slug}`}

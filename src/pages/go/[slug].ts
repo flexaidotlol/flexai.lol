@@ -23,7 +23,10 @@ export const GET: APIRoute = async ({ params, request, clientAddress, redirect }
   const referrer = request.headers.get('referer') || '';
   const visitorHash = hashVisitor(ip, userAgent);
 
-  // Track click safely without exposing private data
+  // Always record click in memoryStore for instant sync
+  memoryStore.recordClick(product.id);
+
+  // Track click safely in Supabase without exposing private data
   if (supabaseServer) {
     try {
       await supabaseServer.from('product_clicks').insert({
@@ -33,13 +36,19 @@ export const GET: APIRoute = async ({ params, request, clientAddress, redirect }
         user_agent_category: userAgent.includes('Mobile') ? 'mobile' : 'desktop',
       });
 
-      // Increment product clicks
-      await supabaseServer.rpc('increment_product_clicks', { p_product_id: product.id });
+      // Try RPC first, fallback to direct column update
+      const { error: rpcErr } = await supabaseServer.rpc('increment_product_clicks', { p_product_id: product.id });
+      if (rpcErr) {
+        await supabaseServer
+          .from('products')
+          .update({
+            total_clicks: (product.total_clicks || 0) + 1,
+          })
+          .eq('id', product.id);
+      }
     } catch (e) {
-      // Ignore click tracking failure so redirect always works smoothly
+      // Ignore error so redirect is never blocked
     }
-  } else {
-    memoryStore.recordClick(product.id);
   }
 
   // Ensure safe protocol

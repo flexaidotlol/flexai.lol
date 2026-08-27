@@ -93,11 +93,13 @@ export const RealtimeLeaderboard: React.FC<RealtimeLeaderboardProps> = ({
     }
   };
 
-  // Supabase Realtime Listener + Fallback Periodic Sync
+  // Supabase Realtime Listener + Continuous 6s Periodic Sync for Clicks and Bids
   useEffect(() => {
     const client = supabaseClient;
+    let channel: any = null;
+
     if (client) {
-      const channel = client
+      channel = client
         .channel('realtime-leaderboard')
         .on(
           'postgres_changes',
@@ -107,15 +109,17 @@ export const RealtimeLeaderboard: React.FC<RealtimeLeaderboardProps> = ({
           }
         )
         .subscribe();
-
-      return () => {
-        client.removeChannel(channel);
-      };
-    } else {
-      // Periodic fallback sync for dynamic activity
-      const timer = setInterval(refreshLeaderboard, 10000);
-      return () => clearInterval(timer);
     }
+
+    // Always keep 6s interval active so clicks & bid updates propagate across all clients
+    const timer = setInterval(refreshLeaderboard, 6000);
+
+    return () => {
+      if (client && channel) {
+        client.removeChannel(channel);
+      }
+      clearInterval(timer);
+    };
   }, []);
 
   const isMilestone = (rank: number) => {
