@@ -185,11 +185,11 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ categories, topProduct
   }, [userBidDollars, selectedCategory, isCustomCategory, allProducts]);
 
   const handleIncrement = () => {
-    setUserBidDollars((prev) => (prev < 10 ? prev + 1 : prev < 50 ? prev + 5 : prev + 10));
+    setUserBidDollars((prev) => prev + 1);
   };
 
   const handleDecrement = () => {
-    setUserBidDollars((prev) => Math.max(2, prev <= 10 ? prev - 1 : prev <= 50 ? prev - 5 : prev - 10));
+    setUserBidDollars((prev) => Math.max(2, prev - 1));
   };
 
   const handlePriceChange = (e: React.ChangeEvent<HTMLInputElement>) => {
