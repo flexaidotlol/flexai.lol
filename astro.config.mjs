@@ -2,7 +2,6 @@ import { defineConfig } from 'astro/config';
 import react from '@astrojs/react';
 import tailwind from '@astrojs/tailwind';
 import node from '@astrojs/node';
-import sentry from '@sentry/astro';
 
 // https://astro.build/config
 export default defineConfig({
@@ -15,12 +14,6 @@ export default defineConfig({
     port: 4321,
   },
   integrations: [
-    sentry({
-      dsn: process.env.PUBLIC_SENTRY_DSN,
-      sourceMapsUploadOptions: {
-        authToken: process.env.SENTRY_AUTH_TOKEN,
-      },
-    }),
     react(),
     tailwind({
       applyBaseStyles: false,
