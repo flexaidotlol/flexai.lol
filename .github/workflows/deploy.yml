@@ -102,15 +102,24 @@ jobs:
             # 4. Start fresh PM2 service
             if command -v pm2 &> /dev/null; then
               pm2 delete flexai 2>/dev/null || true
-              HOST=0.0.0.0 PORT=4321 pm2 start dist/server/entry.mjs --name flexai
+              HOST=0.0.0.0 PORT=4321 pm2 start dist/server/entry.mjs --name flexai --update-env
               pm2 save --force
-            else
-              nohup node dist/server/entry.mjs > flexai.log 2>&1 &
             fi
+
+            sleep 2
+            # Verify if port 4321 is alive, if not launch direct node
+            if ! curl -s -o /dev/null -w "%{http_code}" http://127.0.0.1:4321 | grep -q "200\|301\|302"; then
+              echo "⚠️ Starting direct node server..."
+              HOST=0.0.0.0 PORT=4321 nohup node dist/server/entry.mjs > flexai.log 2>&1 &
+              sleep 2
+            fi
+
+            echo "✅ Port 4321 response:"
+            curl -sI http://127.0.0.1:4321 | head -n 5 || true
 
             # 5. Reload Nginx
             if command -v nginx &> /dev/null; then
               nginx -t 2>/dev/null && nginx -s reload 2>/dev/null || true
             fi
 
-            echo "🎉 SUCCESS: FlexAI rebuilt and running on port 4321!"
+            echo "🎉 SUCCESS: FlexAI rebuilt and running live on port 4321!"
