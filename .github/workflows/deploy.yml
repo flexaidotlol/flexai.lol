@@ -74,18 +74,20 @@ jobs:
             echo "🔨 Running production astro build..."
             npm run build
 
-            echo "🔄 Restarting application with PM2 / Systemd..."
+            echo "🔄 Detecting Nginx proxy port..."
+            PROXY_PORT=$(grep -rohE "proxy_pass http://(127.0.0.1|localhost):[0-9]+" /etc/nginx/ 2>/dev/null | grep -oE "[0-9]+" | head -n 1 || echo "4321")
+            echo "🎯 Target server port: $PROXY_PORT"
+
+            echo "🔄 Clean restarting PM2 on dist/server/entry.mjs..."
             if command -v pm2 &> /dev/null; then
-              pm2 reload all --update-env || pm2 restart all || pm2 start dist/server/entry.mjs --name flexai
-              pm2 save
+              pm2 delete all 2>/dev/null || true
+              HOST=0.0.0.0 PORT=$PROXY_PORT pm2 start dist/server/entry.mjs --name flexai
+              pm2 save --force
             fi
 
-            if systemctl is-active --quiet flexai 2>/dev/null; then
-              systemctl restart flexai
-            fi
-
+            # Check and reload Nginx
             if command -v nginx &> /dev/null; then
-              nginx -s reload 2>/dev/null || true
+              nginx -t 2>/dev/null && nginx -s reload 2>/dev/null || true
             fi
 
             echo "🎉 ALL DONE: Production site rebuilt and restarted on VPS!"
