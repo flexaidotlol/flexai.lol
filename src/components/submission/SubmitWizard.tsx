@@ -273,10 +273,22 @@ export const SubmitWizard: React.FC<SubmitWizardProps> = ({
 
         {errorMsg && (
           <div className="mb-6 p-4 rounded-2xl bg-red-50 dark:bg-red-950/40 border border-red-200 dark:border-red-800 text-red-700 dark:text-red-300 text-xs sm:text-sm flex items-start gap-3">
-            <AlertCircle className="w-5 h-5 shrink-0 mt-0.5" />
-            <div>
-              <p className="font-bold">Check this field:</p>
+            <AlertCircle className="w-5 h-5 shrink-0 mt-0.5 text-red-500" />
+            <div className="space-y-1">
+              <p className="font-bold">Submission Notice:</p>
               <p>{errorMsg}</p>
+              {errorMsg.toLowerCase().includes('ai') && (
+                <p className="text-xs text-slate-600 dark:text-gray-400 pt-1">
+                  Need manual approval for your AI domain? Contact{' '}
+                  <a
+                    href="mailto:flexai.lol@gmail.com?subject=Manual%20AI%20Domain%20Verification%20Request"
+                    className="font-bold text-purple-600 dark:text-purple-400 hover:underline"
+                  >
+                    flexai.lol@gmail.com
+                  </a>{' '}
+                  for instant review and listing activation.
+                </p>
+              )}
             </div>
           </div>
         )}

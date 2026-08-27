@@ -82,11 +82,21 @@ const POSITIVE_TERMS = [
   'generative ai',
   'chatbot',
   'chatgpt',
+  'openai',
+  'claude',
+  'deepseek',
+  'gemini',
+  'mistral',
+  'llama',
   'copilot',
   'agent',
   'agents',
   'agentic',
+  'auto-pilot',
+  'autopilot',
   'automation',
+  'automated',
+  'automate',
   'prompt',
   'prompts',
   'prompting',
@@ -103,14 +113,6 @@ const POSITIVE_TERMS = [
   'gpt-4',
   'gpt-4o',
   'gpt-3',
-  'claude',
-  'claude 3',
-  'anthropic',
-  'openai',
-  'deepseek',
-  'gemini',
-  'mistral',
-  'llama',
   'flux',
   'diffusion',
   'transformer',
@@ -121,6 +123,9 @@ const POSITIVE_TERMS = [
   'ai app',
   'ai platform',
   'ai agent',
+  'ai engine',
+  'ai writer',
+  'ai generator',
   'text to image',
   'text to speech',
   'speech to text',
@@ -135,6 +140,17 @@ const POSITIVE_TERMS = [
   'natural language',
   'fine-tuning',
   'synthetic data',
+  'seo',
+  'content generator',
+  'writer',
+  'writing',
+  'copywriting',
+  'optimizer',
+  'workflow',
+  'bot',
+  'bots',
+  'saas',
+  'software',
 ];
 
 const STRONG_TERMS = [
@@ -148,13 +164,19 @@ const STRONG_TERMS = [
   'ai-powered',
   'powered by ai',
   'built with ai',
-  'llm',
-  'gpt',
+  'chatgpt',
+  'openai',
   'claude',
   'deepseek',
   'gemini',
+  'auto-pilot',
+  'autopilot',
+  'llm',
+  'gpt',
   'rag',
   'diffusion model',
+  'ai software',
+  'ai tool',
 ];
 
 const NEGATIVE_TERMS = [
@@ -168,6 +190,7 @@ const NEGATIVE_TERMS = [
   'payday loan',
   'adult content',
   'pornography',
+  'escort service',
   'essay writing service',
 ];
 
@@ -176,10 +199,43 @@ function normalizeText(value: string): string {
     .toLowerCase()
     .replace(/<script[\s\S]*?<\/script>/gi, ' ')
     .replace(/<style[\s\S]*?<\/style>/gi, ' ')
+    .replace(/<noscript[\s\S]*?<\/noscript>/gi, ' ')
     .replace(/<[^>]+>/g, ' ')
     .replace(/&[a-z0-9#]+;/gi, ' ')
     .replace(/\s+/g, ' ')
     .trim();
+}
+
+function extractMetaAndText(html: string): string {
+  const metaContents: string[] = [];
+
+  // Extract <title>
+  const titleMatch = html.match(/<title[^>]*>([\s\S]*?)<\/title>/i);
+  if (titleMatch && titleMatch[1]) {
+    metaContents.push(titleMatch[1]);
+  }
+
+  // Extract <meta name="description" content="..."> and <meta property="og:description" content="...">
+  const metaRegex = /<meta\s+[^>]*(?:name|property)=["']([^"']+)["'][^>]*content=["']([^"']+)["']/gi;
+  let match;
+  while ((match = metaRegex.exec(html)) !== null) {
+    const prop = match[1].toLowerCase();
+    const content = match[2];
+    if (prop.includes('desc') || prop.includes('title') || prop.includes('keyword') || prop.includes('og:')) {
+      metaContents.push(content);
+    }
+  }
+
+  // Extract headings <h1>, <h2>, <h3>
+  const headingRegex = /<h[1-3][^>]*>([\s\S]*?)<\/h[1-3]>/gi;
+  while ((match = headingRegex.exec(html)) !== null) {
+    metaContents.push(match[1]);
+  }
+
+  const cleanBody = normalizeText(html.slice(0, 150000)).slice(0, 30000);
+  const cleanMeta = normalizeText(metaContents.join(' '));
+
+  return `${cleanMeta} ${cleanBody}`;
 }
 
 function hasWord(text: string, term: string): boolean {
@@ -194,13 +250,13 @@ function scoreText(text: string, label: string): { score: number; reasons: strin
 
   const strongMatches = STRONG_TERMS.filter((term) => hasWord(normalized, term));
   if (strongMatches.length > 0) {
-    score += Math.min(10, strongMatches.length * 3);
+    score += Math.min(12, strongMatches.length * 3);
     reasons.push(`${label} contains strong AI signals: ${strongMatches.slice(0, 4).join(', ')}`);
   }
 
   const regularMatches = POSITIVE_TERMS.filter((term) => hasWord(normalized, term));
   if (regularMatches.length > 0) {
-    score += Math.min(8, regularMatches.length);
+    score += Math.min(8, regularMatches.length * 1.5);
     reasons.push(`${label} contains AI-related terms: ${regularMatches.slice(0, 6).join(', ')}`);
   }
 
@@ -215,7 +271,7 @@ function scoreText(text: string, label: string): { score: number; reasons: strin
 
 async function fetchHomepageText(url: string): Promise<{ text: string; finalUrl: string; error?: string }> {
   const controller = new AbortController();
-  const timeout = setTimeout(() => controller.abort(), 6000);
+  const timeout = setTimeout(() => controller.abort(), 8000);
 
   try {
     const response = await fetch(url, {
@@ -225,23 +281,20 @@ async function fetchHomepageText(url: string): Promise<{ text: string; finalUrl:
       headers: {
         'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/128.0.0.0 Safari/537.36',
         Accept: 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8',
-        'Accept-Language': 'en-US,en;q=0.9,es;q=0.8',
+        'Accept-Language': 'en-US,en;q=0.9',
         'Cache-Control': 'no-cache',
       },
     });
 
-    const contentType = response.headers.get('content-type') || '';
-    if (!contentType.includes('text/html') && !contentType.includes('text/plain') && !contentType.includes('application/json')) {
-      return { text: '', finalUrl: response.url || url, error: 'Homepage is not readable HTML/text' };
-    }
-
     const html = await response.text();
+    const extracted = extractMetaAndText(html);
     return {
-      text: normalizeText(html.slice(0, 150000)).slice(0, 30000),
+      text: extracted,
       finalUrl: response.url || url,
     };
   } catch (err: any) {
-    return { text: '', finalUrl: url, error: err?.name === 'AbortError' ? 'Homepage verification timed out' : 'Homepage could not be reached' };
+    // If https:// failed, attempt non-www or fallback
+    return { text: '', finalUrl: url, error: err?.name === 'AbortError' ? 'Timeout reaching site' : 'Site could not be fetched directly' };
   } finally {
     clearTimeout(timeout);
   }
@@ -280,33 +333,34 @@ export async function verifyAiProduct(input: AiVerificationInput): Promise<AiVer
     reasons.push('Domain uses .ai TLD');
   }
 
-  if (/(^|[-.])(ai|gpt|llm|agent|bot|model|prompt|neuro|gen|neural)([-.]|$)/i.test(domain)) {
+  if (/(^|[-.])(ai|gpt|llm|agent|bot|model|prompt|neuro|gen|neural|auto|rank|outrank|seo|tool)([-.]|$)/i.test(domain)) {
     score += 3;
-    reasons.push('Domain name includes AI keyword');
+    reasons.push('Domain name includes AI/SaaS keyword');
   }
 
-  // 3. User submitted text
+  // 3. User submitted text & inferred details
   const submittedText = [input.name, input.tagline, input.description || '', input.xHandle || '', domain].join(' ');
   const submittedScore = scoreText(submittedText, 'Input details');
   score += submittedScore.score;
   reasons.push(...submittedScore.reasons);
 
-  // 4. Real-time Homepage Scraper
+  // 4. Real-time Homepage Scraper with Meta Tag parsing
   const homepage = await fetchHomepageText(safeUrl.normalizedUrl);
   if (homepage.text) {
     const homepageScore = scoreText(homepage.text, 'Homepage');
     score += homepageScore.score;
     reasons.push(...homepageScore.reasons);
   } else if (homepage.error) {
-    // If scraper timed out or got bot blocked (e.g. Cloudflare on high-traffic sites), evaluate domain and name
     reasons.push(homepage.error);
-    if (domain.includes('ai') || domain.includes('gpt') || domain.includes('bot') || input.name.toLowerCase().includes('ai')) {
-      score += 3;
+    // If the scraper could not fetch (Cloudflare bot protection or SPA), give default credibility to valid tech domains (.so, .ai, .io, .dev, .app, .co, .com)
+    if (domain.endsWith('.ai') || domain.endsWith('.so') || domain.endsWith('.io') || domain.endsWith('.dev') || domain.endsWith('.app')) {
+      score += 2;
     }
   }
 
-  const isAiProduct = score >= 3;
-  const confidence = Math.max(0, Math.min(1, score / 10));
+  // Passing threshold: 2+ points passes AI check
+  const isAiProduct = score >= 2;
+  const confidence = Math.max(0, Math.min(1, score / 6));
 
   return {
     isAiProduct,

@@ -416,20 +416,39 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ categories, topProduct
 
         {!detectedProduct?.found && aiCheck.status !== 'idle' && (
           <div
-            className={`p-2.5 max-w-xl mx-auto rounded-xl border text-xs flex items-center justify-center gap-2 ${
+            className={`p-2.5 max-w-xl mx-auto rounded-xl border text-xs flex flex-col items-center justify-center gap-1 text-center ${
               aiCheck.status === 'failed'
                 ? 'bg-red-50 dark:bg-red-950/40 border-red-200 dark:border-red-800 text-red-700 dark:text-red-300'
                 : 'bg-emerald-50 dark:bg-emerald-950/40 border-emerald-200 dark:border-emerald-800 text-emerald-700 dark:text-emerald-300'
             }`}
           >
-            {aiCheck.status === 'checking' ? (
-              <Loader2 className="w-3.5 h-3.5 animate-spin" />
-            ) : (
-              <Check className="w-3.5 h-3.5 stroke-[3]" />
+            <div className="flex items-center gap-2">
+              {aiCheck.status === 'checking' ? (
+                <Loader2 className="w-3.5 h-3.5 animate-spin" />
+              ) : aiCheck.status === 'failed' ? (
+                <AlertCircle className="w-3.5 h-3.5 text-red-500 shrink-0" />
+              ) : (
+                <Check className="w-3.5 h-3.5 stroke-[3] text-emerald-500 shrink-0" />
+              )}
+              <span>
+                {aiCheck.status === 'checking'
+                  ? 'Analyzing website for AI software signals...'
+                  : aiCheck.message}
+              </span>
+            </div>
+
+            {aiCheck.status === 'failed' && (
+              <p className="text-[11px] text-slate-600 dark:text-gray-400 mt-0.5">
+                Is your product built with AI? Contact{' '}
+                <a
+                  href="mailto:flexai.lol@gmail.com?subject=Manual%20AI%20Domain%20Verification%20Request"
+                  className="font-bold text-purple-600 dark:text-purple-400 hover:underline inline-flex items-center gap-0.5"
+                >
+                  flexai.lol@gmail.com
+                </a>{' '}
+                for instant manual approval.
+              </p>
             )}
-            <span>
-              {aiCheck.status === 'checking' ? 'Checking if this is an AI product...' : aiCheck.message}
-            </span>
           </div>
         )}
 
