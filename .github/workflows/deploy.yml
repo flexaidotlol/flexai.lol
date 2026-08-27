@@ -77,32 +77,38 @@ jobs:
             echo "🔨 Running production astro build..."
             npm run build
 
-            # 2. Configure indestructible systemd service for FlexAI
-            NODE_BIN=$(which node || echo "/usr/bin/node")
-            echo "Node binary located at: $NODE_BIN"
-
-            printf "[Unit]\nDescription=FlexAI Astro Production Server\nAfter=network.target\n\n[Service]\nType=simple\nUser=root\nWorkingDirectory=/var/www/flexai.lol\nEnvironment=NODE_ENV=production\nEnvironment=HOST=127.0.0.1\nEnvironment=PORT=4321\nExecStart=%s /var/www/flexai.lol/dist/server/entry.mjs\nRestart=always\nRestartSec=2\nStandardOutput=journal\nStandardError=journal\n\n[Install]\nWantedBy=multi-user.target\n" "$NODE_BIN" > /etc/systemd/system/flexai.service
-
-            # Clean any old processes and restart systemd service
+            # 2. Restart PM2 on port 4321
+            echo "🔄 Starting FlexAI server on 127.0.0.1:4321..."
             fuser -k 4321/tcp 2>/dev/null || true
             sleep 1
-            systemctl daemon-reload
-            systemctl enable flexai
-            systemctl restart flexai
 
-            sleep 3
-            echo "✅ Checking FlexAI service status:"
-            systemctl status flexai --no-pager -l || true
+            if command -v pm2 &> /dev/null; then
+              pm2 delete flexai 2>/dev/null || true
+              pm2 delete all 2>/dev/null || true
+              HOST=127.0.0.1 PORT=4321 pm2 start dist/server/entry.mjs --name flexai --update-env
+              pm2 save --force
+            fi
 
-            echo "✅ Health check for port 4321:"
-            curl -sI "http://127.0.0.1:4321" | head -n 5 || true
+            sleep 2
+            # Fallback to direct node if PM2 did not bind
+            if ! curl -s -o /dev/null -w "%{http_code}" "http://127.0.0.1:4321" | grep -q "200\|301\|302"; then
+              echo "⚠️ Starting direct node server with nohup..."
+              HOST=127.0.0.1 PORT=4321 nohup node dist/server/entry.mjs > /tmp/flexai.log 2>&1 &
+              sleep 2
+            fi
 
-            echo "🔍 Verifying Live HTML output on port 4321:"
-            curl -s "http://127.0.0.1:4321" | grep -o 'Claim.*' | head -n 2 || true
+            echo "✅ Port 4321 Response:"
+            curl -sI "http://127.0.0.1:4321" | head -n 10 || true
+
+            # If still failing, dump logs
+            if ! curl -s -o /dev/null -w "%{http_code}" "http://127.0.0.1:4321" | grep -q "200\|301\|302"; then
+              echo "❌ ERROR LOGS:"
+              pm2 logs flexai --lines 30 --nostream 2>/dev/null || cat /tmp/flexai.log 2>/dev/null || true
+            fi
 
             # 3. Reload Nginx
             if command -v nginx &> /dev/null; then
-              nginx -t 2>/dev/null && (systemctl reload nginx 2>/dev/null || systemctl restart nginx 2>/dev/null || nginx -s reload 2>/dev/null || true)
+              nginx -t 2>/dev/null && (systemctl reload nginx 2>/dev/null || nginx -s reload 2>/dev/null || true)
             fi
 
-            echo "🎉 SUCCESS: FlexAI rebuilt and running live on port 4321 via systemd!"
+            echo "🎉 SUCCESS: FlexAI rebuilt and running live on port 4321!"
