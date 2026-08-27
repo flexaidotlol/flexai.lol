@@ -257,7 +257,8 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ categories, topProduct
         if (found) targetCategoryId = found.id;
       }
 
-      const domainBase = domain.split('.')[0] || 'AI Product';
+      const rawDomain = domain || inputValue.trim().replace(/^https?:\/\//, '').replace(/^www\./, '').split('/')[0];
+      const domainBase = rawDomain.split('.')[0] || 'AI Startup';
       const cleanName = domainBase.charAt(0).toUpperCase() + domainBase.slice(1);
 
       const payload = {
