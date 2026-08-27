@@ -1,6 +1,17 @@
 import { createClient } from '@supabase/supabase-js';
 import { env } from '../env';
 
+// Ensure global WebSocket exists in Node.js runtime so Supabase client never throws
+if (typeof globalThis.WebSocket === 'undefined') {
+  (globalThis as any).WebSocket = class DummyWebSocket {
+    constructor() {}
+    addEventListener() {}
+    removeEventListener() {}
+    send() {}
+    close() {}
+  };
+}
+
 const hasServerSupabase = Boolean(
   env.PUBLIC_SUPABASE_URL &&
   env.PUBLIC_SUPABASE_URL.startsWith('https://') &&
@@ -11,11 +22,17 @@ const hasServerSupabase = Boolean(
 
 const cleanUrl = env.PUBLIC_SUPABASE_URL.replace(/\/rest\/v1\/?$/, '').replace(/\/+$/, '');
 
-export const supabaseServer = hasServerSupabase
-  ? createClient(cleanUrl, env.SUPABASE_SECRET_KEY, {
+export const supabaseServer = (() => {
+  if (!hasServerSupabase) return null;
+  try {
+    return createClient(cleanUrl, env.SUPABASE_SECRET_KEY, {
       auth: {
         autoRefreshToken: false,
         persistSession: false,
       },
-    })
-  : null;
+    });
+  } catch (err) {
+    console.error('Supabase server init error:', err);
+    return null;
+  }
+})();
